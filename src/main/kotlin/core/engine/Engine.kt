@@ -1,17 +1,18 @@
 package src.main.kotlin.core.engine
 
 import core.engine.*
+import core.engine.ai.NegaMaxIDPlayer
+import core.engine.ai.NegaMaxPlayer
+import core.engine.ai.Player
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlin.collections.union
 
 class Engine {
 
     var board = Board()
 
 
-    var playerOne: Player = AlphaBetaPlayer(0, 5)
-    var playerTwo: Player = AlphaBetaPlayer(1, 5)
+    var playerOne: Player = NegaMaxPlayer(0, 5)
+    var playerTwo: Player = NegaMaxIDPlayer(1, 5)
 
     var playerTurn = 0
 
