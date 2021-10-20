@@ -1,6 +1,7 @@
 package src.main.kotlin.core.engine
 
 import core.engine.*
+import core.engine.ai.AlphaBetaPlayer
 import core.engine.ai.NegaMaxIDPlayer
 import core.engine.ai.NegaMaxPlayer
 import core.engine.ai.Player
@@ -11,8 +12,8 @@ class Engine {
     var board = Board()
 
 
-    var playerOne: Player = NegaMaxPlayer(0, 5)
-    var playerTwo: Player = NegaMaxIDPlayer(1, 5)
+    var playerOne: Player = AlphaBetaPlayer(0, 5)
+    var playerTwo: Player = NegaMaxPlayer(1, 5)
 
     var playerTurn = 0
 
@@ -90,7 +91,7 @@ class Engine {
 
             val move = moves.random()
 
-            println("player ${player} moves from ${move.from} to ${move.to} ")
+//            println("player ${player} moves from ${move.from} to ${move.to} ")
 
             move.applyMove(board, playerTurn)
             board.printBoard()

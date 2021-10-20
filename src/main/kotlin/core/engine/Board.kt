@@ -36,16 +36,16 @@ class Board {
             for (j in 0..9)
                 newBoard.board[i][j] = this.board[i][j]
 
-        newBoard.townDeads = arrayOf(null, null)
-        newBoard.cannonCounts = arrayOf(null, null)
-        newBoard.pawnCount = arrayOf(null, null)
+//        newBoard.townDeads = arrayOf(null, null)
+//        newBoard.cannonCounts = arrayOf(null, null)
+//        newBoard.pawnCount = arrayOf(null, null)
 
         return newBoard
     }
 
-    var townDeads = arrayOf<Boolean?>(null, null)
-    var cannonCounts = arrayOf<Int?>(null, null)
-    var pawnCount = arrayOf<Int?>(null, null)
+//    var townDeads = arrayOf<Boolean?>(null, null)
+//    var cannonCounts = arrayOf<Int?>(null, null)
+//    var pawnCount = arrayOf<Int?>(null, null)
 
 
     init {
@@ -125,18 +125,18 @@ class Board {
         val row = if (playerTurn == 0) 9 else 0
 
         var isTownDead = true
-        for (i in 1..8) {
+        for (i in 1..9) {
             if (board[row][i] == 3 + playerTurn)
                 isTownDead = false
         }
 
         if (isTownDead) {
-            townDeads[playerTurn] = true
+//            townDeads[playerTurn] = true
             return true
         }
 
 
-        townDeads[playerTurn] = false
+//        townDeads[playerTurn] = false
         return false
 
     }
@@ -220,7 +220,7 @@ class Board {
 
             }
 
-        cannonCounts[player] = counter
+//        cannonCounts[player] = counter
 
         return counter
     }
@@ -237,7 +237,7 @@ class Board {
                 if (board[i][j].isFriendlySoldier(player))
                     cnt++
 
-        pawnCount[player] = cnt
+//        pawnCount[player] = cnt
         return cnt
     }
 

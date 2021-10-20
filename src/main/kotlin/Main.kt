@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import src.main.kotlin.core.engine.Engine
 import src.main.kotlin.core.engine.Move
 import src.main.kotlin.core.engine.Position
+import src.main.kotlin.core.engine.otherPlayer
 
 @Composable
 @Preview
@@ -53,7 +54,7 @@ fun App() {
 
             println("moving ${move.type} ${move.from} ${move.to}")
             engine.turnsPassed++
-            engine.playerTurn = engine.turnsPassed.mod(2)
+            engine.playerTurn = engine.playerTurn.otherPlayer()
 
             board = engine.board.copy()
             return
@@ -69,7 +70,7 @@ fun App() {
 
             println("moving ${move.type} ${move.from} ${move.to}")
             engine.turnsPassed++
-            engine.playerTurn = engine.turnsPassed.mod(2)
+            engine.playerTurn = engine.playerTurn.otherPlayer()
 
             board = engine.board.copy()
             return
@@ -221,9 +222,9 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
 
 
     val possibleMoves = engine.getPossibleMoves(engine.playerTurn, engine.board)
-    println("engine ${engine.playerTurn} ${engine.turnsPassed}")
+//    println("engine ${engine.playerTurn} ${engine.turnsPassed}")
 
-    board.printBoard()
+//    board.printBoard()
 
     fun simulateGame() {
 

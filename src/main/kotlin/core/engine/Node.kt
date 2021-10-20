@@ -7,9 +7,11 @@ import src.main.kotlin.core.engine.otherPlayer
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
+val random: Random = Random(System.currentTimeMillis())
+
 
 class Node(
-    val state: Board, val engine: Engine, val player: Int,
+    val state: Board, val engine: Engine, var player: Int,
     val depth: Int,
     val isMax: Boolean,
     var alpha: Int,
@@ -32,20 +34,23 @@ class Node(
 
     }
 
-    val random: Random = Random(System.currentTimeMillis())
 
     lateinit var parent: Node
 
-//    fun toStr(): String {
-//
-//    }
 
     fun isTerminalState(): Boolean {
 
-        if (engine.getPossibleMoves(player, state).isEmpty())
-            return true
+
         if (state.isTownDead(player) && engine.turnsPassed > 2)
             return true
+        if (state.isTownDead(player.otherPlayer()) && engine.turnsPassed > 2)
+            return true
+
+
+        calcMoves()
+        if (myMoves.isEmpty() || enemyMoves.isEmpty())
+            return true
+
 
         return false
 
@@ -57,10 +62,13 @@ class Node(
 
 
     fun calcMoves() {
-        if (::myMoves.isInitialized)
-            return
-        myMoves = engine.getPossibleMoves(player, state)
-        enemyMoves = engine.getPossibleMoves(player.otherPlayer(), state)
+        if (::myMoves.isInitialized.not())
+            myMoves = engine.getPossibleMoves(player, state)
+
+
+//        myMoves = engine.getPossibleMoves(player, state)
+        if (::enemyMoves.isInitialized.not())
+            enemyMoves = engine.getPossibleMoves(player.otherPlayer(), state)
     }
 
 
@@ -85,10 +93,63 @@ class Node(
         return 0.0
     }
 
+
+    fun evaluateState(player: Int): Int {
+
+
+        this.player = player
+
+        myMoves = engine.getPossibleMoves(player, state)
+
+        enemyMoves = engine.getPossibleMoves(player.otherPlayer(), state)
+
+        if (myMoves.isEmpty() || state.isTownDead(player) || state.pawnCount(player) == 0) // total lost
+            return -300
+
+        if (state.isTownDead((player.otherPlayer())) || state.pawnCount(player.otherPlayer()) == 0 || enemyMoves.isEmpty()) // total win
+            return 300
+
+        val shootCnt = myMoves.filter { it.type == Move.Type.Shoot }.size
+        var eShootCnt = enemyMoves.filter { it.type == Move.Type.Shoot }.size
+        if (eShootCnt == 0)
+            eShootCnt = 1
+
+        val captureCnt = myMoves.filter { it.type == Move.Type.Capture }.size
+        var eCaptureCnt = enemyMoves.filter { it.type == Move.Type.Capture }.size
+
+        if (eCaptureCnt == 0)
+            eCaptureCnt = 1
+
+        val myCannons = state.numberOfCannons(player)
+
+        var enemyCannons = state.numberOfCannons(player.otherPlayer())
+
+        if (enemyCannons == 0)
+            enemyCannons = 1
+
+        val possibleShots = state.numberOfPossibleShots(player)
+        var enemyPossibleShots = state.numberOfPossibleShots(player.otherPlayer())
+
+        if (enemyPossibleShots == 0)
+            enemyPossibleShots = 1
+
+        var result =
+            ((myMoves.size.toFloat() / enemyMoves.size) * 2 + 6 * (myCannons.toFloat() / enemyCannons) +
+                    50 * (state.pawnCount(player).toFloat() / state.pawnCount(player.otherPlayer())) +
+                    (6 * (shootCnt.toFloat() / eShootCnt))
+                    + 2 * (captureCnt.toFloat() / eCaptureCnt)
+                    + 4 * (possibleShots / enemyPossibleShots)
+                    + 1 * (random).nextInt(4)
+//                    + 1 * (progressTowardEnemyTown)
+                    )
+
+//        println("Evaluation is $result")
+        return result.roundToInt()
+    }
+
     fun evaluateState(): Int {
 
         calcMoves()
-
 
 
         if (myMoves.isEmpty() || state.isTownDead(player) || state.pawnCount(player) == 0) // total lost
@@ -121,17 +182,9 @@ class Node(
         if (enemyPossibleShots == 0)
             enemyPossibleShots = 1
 
-        val distanceToEnemyTown = state.calcDistanceToEnemyTown(player)
-        val distanceToMyTown = state.calcDistanceToMyTown(player)
-
-        val enemyDistanceToMyTown = state.calcDistanceToMyTown(player.otherPlayer())
-
-//        val progressTowardEnemyTown = calcMovementTowardEnemyTownValue()
-
-
         var result =
-            ((myMoves.size.toFloat() / enemyMoves.size) * 2 + 4 * (myCannons.toFloat() / enemyCannons) +
-                    35 * (state.pawnCount(player).toFloat() / state.pawnCount(player.otherPlayer())) +
+            ((myMoves.size.toFloat() / enemyMoves.size) * 2 + 6 * (myCannons.toFloat() / enemyCannons) +
+                    45 * (state.pawnCount(player).toFloat() / state.pawnCount(player.otherPlayer())) +
                     (6 * (shootCnt.toFloat() / eShootCnt))
                     + 2 * (captureCnt.toFloat() / eCaptureCnt)
                     + 4 * (possibleShots / enemyPossibleShots)

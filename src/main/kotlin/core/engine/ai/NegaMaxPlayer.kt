@@ -14,7 +14,7 @@ class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI
 
 
         if (depth == 0 || node.isTerminalState())
-            return node.evaluateState()
+            return node.evaluateState(player)
 
 //        val children = node.getChildNodes()
 
@@ -25,14 +25,6 @@ class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI
 
         for (move in node.getMoves()) {
 
-//            val newBoard = node.state.copy()
-
-//            move.applyMove(newBoard, player)
-//
-//            val childNode = Node(
-//                newBoard, node.engine, (player + 1).mod(2), depth - 1, node.isMax.not(), alpha, beta, move
-//            )
-//            childNode.parent = node
 
             val child = node.getNodeForMove(move)
 
@@ -45,7 +37,7 @@ class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI
 
             if (value > alpha)
                 mAlpha = score
-            if (score >= beta)
+            if (score + 5 >= beta)
                 break
         }
         return score
