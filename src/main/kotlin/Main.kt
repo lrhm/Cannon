@@ -208,7 +208,7 @@ fun playerSelector(player: Int, onSelectPlayer: (Player) -> Unit) {
 
 }
 
-val engine = Engine()
+val engine = Engine
 
 
 @OptIn(ExperimentalDesktopApi::class)

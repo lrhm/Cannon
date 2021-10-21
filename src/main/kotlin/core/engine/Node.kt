@@ -143,7 +143,6 @@ class Node(
 //                    + 1 * (progressTowardEnemyTown)
                     )
 
-//        println("Evaluation is $result")
         return result.roundToInt()
     }
 

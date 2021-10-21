@@ -3,6 +3,7 @@ package core.engine.ai
 import core.engine.Node
 import core.engine.Engine
 import core.engine.Move
+import core.engine.ai.evaluator.MaterialEvaluator
 import core.engine.otherPlayer
 import java.lang.Integer.max
 import java.lang.Integer.min
@@ -11,14 +12,19 @@ import java.lang.Integer.min
 class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
 
-//    val transpositionTable = LRUCache<String, Node?>(1000)
+    //    val transpositionTable = LRUCache<String, Node?>(1000)
+    val evaluator = MaterialEvaluator()
+
+    override fun evaluateState(node: Node): Int {
+        return evaluator.evaluateState(node.state, player)
+    }
 
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int, isMax: Boolean): Int {
 
 
 //        node.player = node.player.otherPlayer()
         if (depth == 0 || node.isTerminalState()) {
-            return node.evaluateState(player)
+            return evaluateState(node)
         }
 
 
@@ -42,7 +48,7 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
                     score
                 )
 
-                if (score  + 5 >= mBeta)
+                if (score  >= mBeta)
                     break
                 mAlpha = max(mAlpha, value)
 
@@ -58,7 +64,6 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
             for (move in moves) {
 
 
-
                 val child = node.getNodeForMove(move)
                 val score = doAlphaBeta(child, depth - 1, mAlpha, mBeta, true)
 
@@ -69,7 +74,7 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
                     value,
                     score
                 )
-                if (value <= mAlpha + 5)
+                if (value <= mAlpha )
                     break
 
                 mBeta = min(mAlpha, value)
@@ -90,7 +95,7 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
         val parentNode = Node(
             engine.board, engine, engine.playerTurn, maxDepth, true, Int.MIN_VALUE, Int.MIN_VALUE
         )
-         doAlphaBeta(
+        doAlphaBeta(
             parentNode, maxDepth, Int.MIN_VALUE, Int.MAX_VALUE, true
         )
 
