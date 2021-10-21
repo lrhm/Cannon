@@ -15,13 +15,13 @@ import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.res.loadImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import src.main.kotlin.core.engine.Position
+import core.engine.Position
 import java.io.File
 import java.io.InputStream
 
 @Composable
 @Preview
-fun Cell(position: Position, value: Int, isSelectable: Boolean, onSelected: (Position) -> Unit) {
+fun Cell(position: _root_ide_package_.core.engine.Position, value: Int, isSelectable: Boolean, onSelected: (_root_ide_package_.core.engine.Position) -> Unit) {
 
 
     val imageModifier = Modifier

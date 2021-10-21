@@ -62,12 +62,12 @@ class Board {
 
     }
 
-    fun getTownPosition(player: Int): Position? {
+    fun getTownPosition(player: Int): _root_ide_package_.core.engine.Position? {
 
         val row = if (player == 0) 9 else 0
         for (i in 1..8) {
             if (board[row][i] == 3 + player)
-                return Position(row, i)
+                return _root_ide_package_.core.engine.Position(row, i)
         }
 
         return null

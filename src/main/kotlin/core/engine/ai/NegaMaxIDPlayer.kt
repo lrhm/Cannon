@@ -114,7 +114,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
             d++
         }
 
-        transpositionHash.evictAll()
+//        transpositionHash.evictAll()
 
 
         println("It took ${System.currentTimeMillis() - timeStamp} and now map is ${transpositionHash.size()}")

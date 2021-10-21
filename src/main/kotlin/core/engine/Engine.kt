@@ -1,4 +1,4 @@
-package src.main.kotlin.core.engine
+package core.engine
 
 import core.engine.*
 import core.engine.ai.AlphaBetaPlayer
@@ -117,7 +117,7 @@ class Engine {
 
     }
 
-    fun getPossibleMoves(player: Int, board: Board = this.board): List<Move> {
+    fun getPossibleMoves(player: Int, board: Board = this.board): List<_root_ide_package_.core.engine.Move> {
 
 //        val set = mutableSetOf(
 //
@@ -131,7 +131,7 @@ class Engine {
         if (turnsPassed < 2)
             return getTownPlaceMove(board, player)
 
-        val all = mutableListOf<Move>()
+        val all = mutableListOf<_root_ide_package_.core.engine.Move>()
         all.addAll(getShootMoves(board, player))
         all.addAll(getCaptureMoves(board, player))
         all.addAll(getSlideMoves(board, player))
@@ -143,14 +143,14 @@ class Engine {
 
     }
 
-    fun getTownPlaceMove(board: Board, player: Int): MutableList<Move> {
-        val moves = mutableListOf<Move>()
+    fun getTownPlaceMove(board: Board, player: Int): MutableList<_root_ide_package_.core.engine.Move> {
+        val moves = mutableListOf<_root_ide_package_.core.engine.Move>()
 
 
         for (i in 1..8)
             moves.add(
-                Move(
-                    Move.Type.PlaceTown, Position(-1, -1),
+                _root_ide_package_.core.engine.Move(
+                    _root_ide_package_.core.engine.Move.Type.PlaceTown, _root_ide_package_.core.engine.Position(-1, -1),
                     Position
                         (
                         if (player == 0) 9 else 0, i
@@ -400,7 +400,7 @@ fun Int.isEnemy(player: Int): Boolean {
     return false
 }
 
-open class Move(val type: Move.Type, var from: Position, var to: Position) {
+open class Move(val type: Type, var from: Position, var to: Position) {
     enum class Type {
         Slide,
         Retreat,
