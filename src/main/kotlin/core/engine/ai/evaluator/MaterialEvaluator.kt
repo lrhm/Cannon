@@ -67,7 +67,7 @@ class MaterialEvaluator : Evaluator {
         val weights = arrayListOf(
             3, -2,
             4, -2,
-            19, -20,
+            20, -20,
             5, -4,
             5, -4,
             6, -6,

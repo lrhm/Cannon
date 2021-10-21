@@ -11,8 +11,8 @@ import kotlin.math.roundToInt
 object Engine {
 
     var board = Board()
-    var playerOne: Player = AlphaBetaPlayer(0, 4)
-    var playerTwo: Player = AlphaBetaPlayer(1, 4)
+    var playerOne: Player = AlphaBetaPlayer(0, 5)
+    var playerTwo: Player = AlphaBetaPlayer(1, 5)
     var playerTurn = 0
     var turnsPassed = 0
 
