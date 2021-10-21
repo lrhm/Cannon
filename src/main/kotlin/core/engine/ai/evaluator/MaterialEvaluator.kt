@@ -1,6 +1,7 @@
 package core.engine.ai.evaluator
 
 import core.engine.*
+import kotlin.math.roundToInt
 import kotlin.random.Random
 import kotlin.random.nextInt
 
@@ -10,10 +11,11 @@ class MaterialEvaluator(
     val weights: List<Int> = arrayListOf(
         3, -2, //moves
         2, -2, //cannons
-        25, -28, //pawns
+        35, -40, //pawns
         5, -4, //shoot
         5, -4, //capture
         3, -3, //possible shots
+        8, 6, // number pawn in attack vs defend
         2 // random
     )
 ) : Evaluator {
@@ -33,7 +35,7 @@ class MaterialEvaluator(
 
     val engine = Engine
 
-    override fun evaluateState(node: Node, player: Int): Int {
+    override fun evaluateState(node: Node, player: Int, move: Move?): Int {
 
         val state = node.state
         node.calcMoves()
@@ -78,6 +80,11 @@ class MaterialEvaluator(
 //        if (ePawnCount == 0)
 //            ePawnCount = 1
 
+        val distanceToEnemy =-1 * state.calcDistanceToEnemyTown(player)
+        val distanceToTown = 1.0f / state.calcDistanceToMyTown(player)
+
+//        val numberOfAttackingPawns =  0//state.numberOfMyPawnsInIthStepOfEnemyTown(player,4)
+//        val numberOfDeffendingPawns = 0//state.getHowCloseAreWeDefending(player)
 
         val features = arrayListOf(
             myMoves.size, enemyMoves.size,
@@ -86,8 +93,10 @@ class MaterialEvaluator(
             shootCnt, eShootCnt,
             captureCnt, eCaptureCnt,
             possibleShots, enemyPossibleShots,
+            distanceToEnemy.roundToInt(), distanceToTown.roundToInt(),
             random.nextInt(5)
         )
+
 
 //        val weights = arrayListOf(
 //            3, -2,
@@ -101,7 +110,9 @@ class MaterialEvaluator(
 
         val res = features.reduceIndexed { index, acc, i -> acc + i * weights[index] }
 
+//        println("distances are ${distanceToEnemy} $distanceToTown $res")
 //        println("evaluation is ${res}")
+//        println("Attack val ${numberOfAttackingPawns} ${numberOfDeffendingPawns}")
 
 
         return res

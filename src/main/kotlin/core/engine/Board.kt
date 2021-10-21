@@ -1,6 +1,9 @@
 package core.engine
 
 import core.engine.*
+import java.lang.Integer.max
+import java.lang.Integer.min
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 class Board {
@@ -18,7 +21,7 @@ class Board {
         IntArray(10) { 0 }
     }
 
-    fun toStr(): String{
+    fun toStr(): String {
 
         var str = ""
         for (i in 0..9)
@@ -75,6 +78,8 @@ class Board {
 
 
     fun calcDistance(i: Int, j: Int, i1: Int, j1: Int): Double {
+
+
         return sqrt(((i - i1).times(i - i1) + (j - j1).times(j - j1)).toDouble())
     }
 
@@ -88,7 +93,12 @@ class Board {
         for (i in 0..9)
             for (j in 0..9) {
                 if (board[i][j].isFriendlySoldier(player)) {
-                    totalDistance += calcDistance(i, j, enemyTownPostion.i, enemyTownPostion.j)
+                    totalDistance += calcDistance(i, j, enemyTownPostion.i, enemyTownPostion.j) * if (abs(
+                            enemyTownPostion.j - j
+                        ) > 5
+                    ) 2 else 1
+
+
                     pawnCount++
                 }
             }
@@ -225,6 +235,159 @@ class Board {
         return counter
     }
 
+    fun getHowCloseThePlayerIsToEnemyTown(player: Int): Int {
+        println("calcing close ness factor")
+        val weights = arrayOf(40, 30, 20, 10, 5, 3)
+        var totalSum = 0
+
+        for (i in 0..6) {
+            totalSum += weights[i] * numberOfMyPawnsInIthStepOfEnemyTown(player, i)
+        }
+
+        return totalSum
+    }
+
+
+    fun getHowCloseAreWeDefending(player: Int): Int {
+        val weights = arrayOf(20, 30, 20, 10, 5, 3)
+        var totalSum = 0
+
+        for (i in 0..4) {
+            totalSum += weights[i] * numberOfMyPawnsInIthStepOfMyTown(player, i)
+        }
+
+        return totalSum
+    }
+
+    fun numberOfMyPawnsInIthStepOfMyTown(player: Int, step: Int): Int {
+
+        val enemyTownPosition = getTownPosition(player)!!
+
+
+        var count = 0
+        if (enemyTownPosition.i == 0) {
+            for (i in 0..step) {
+                for (j in -1 * (i + 2)..1 * (i + 2)) {
+                    try {
+                        if (board[i + enemyTownPosition.i][j + enemyTownPosition.j].isFriendlySoldier(player))
+                            count++
+                    } catch (e: Exception) {
+
+                    }
+                }
+            }
+        }
+
+
+        if (enemyTownPosition.i == 9) {
+            for (i in 0..step) {
+                for (j in -1 * (i + 2)..1 * (i + 2)) {
+                    try {
+                        if (board[enemyTownPosition.i - i][j + enemyTownPosition.j].isFriendlySoldier(player))
+                            count++
+                    } catch (e: Exception) {
+
+                    }
+                }
+            }
+        }
+
+
+        return count
+
+    }
+
+
+    fun getHowCloserIsAMoveIZToZEnemiZ(player: Int, move: Move): Int {
+
+        val enemyTownPosition = getTownPosition(player.otherPlayer())!!
+        val weights = arrayOf(40, 30, 20, 10, 5, 3)
+        var totalSum = 0
+
+        var count = 0
+        var step = 5
+
+        if (abs(enemyTownPosition.i - move.to.i) > 6)
+            return 0
+
+        if (abs(enemyTownPosition.j - move.to.j) > 6)
+            return 0
+
+        if (enemyTownPosition.i == 0) {
+            for (i in 0..step) {
+                count = 0
+                for (j in max(-1 * (i + 1), 0)..min(1 * (i + 1), 9)) {
+                    if (i + enemyTownPosition.i == move.to.i && j + enemyTownPosition.j == move.to.j)
+                        return weights[i]
+                }
+            }
+        }
+
+
+        if (enemyTownPosition.i == 9) {
+            for (i in 0..step) {
+
+                for (j in max(-1 * (i + 1), 0)..min(1 * (i + 1), 9)) {
+
+                    if (move.to.j == j + enemyTownPosition.j && move.to.i == enemyTownPosition.i - i)
+                        return weights[step]
+                }
+            }
+
+
+        }
+
+        return 0
+
+    }
+
+
+    fun numberOfMyPawnsInIthStepOfEnemyTown(player: Int, step: Int): Int {
+
+        val enemyTownPosition = getTownPosition(player.otherPlayer())!!
+        val weights = arrayOf(40, 30, 20, 10, 5, 3)
+        var totalSum = 0
+
+        var count = 0
+        if (enemyTownPosition.i == 0) {
+            for (i in 0..step) {
+                count = 0
+                for (j in max(-1 * (i + 1), 0)..min(1 * (i + 1), 9)) {
+
+//                    println("trying board position ${i + enemyTownPosition.i} and ${j + enemyTownPosition.j} ")
+                    try {
+                        if (board[i + enemyTownPosition.i][j + enemyTownPosition.j].isFriendlySoldier(player))
+                            count++
+                    } catch (e: Exception) {
+
+                    }
+                }
+
+                totalSum += count * weights[step]
+            }
+        }
+
+
+        if (enemyTownPosition.i == 9) {
+            for (i in 0..step) {
+                count = 0
+                for (j in max(-1 * (i + 1), 0)..min(1 * (i + 1), 9)) {
+
+                    try {
+                        if (board[enemyTownPosition.i - i][j + enemyTownPosition.j].isFriendlySoldier(player))
+                            count++
+                    } catch (e: Exception) {
+
+                    }
+                }
+            }
+            totalSum += count * weights[step]
+
+        }
+
+        return totalSum
+
+    }
 
     fun pawnCount(player: Int): Int {
 

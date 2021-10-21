@@ -2,7 +2,6 @@ package core.engine.ai
 
 import core.engine.Node
 import core.engine.Engine
-import core.engine.LRUCache
 import core.engine.Move
 import core.engine.ai.evaluator.MaterialEvaluator
 import core.engine.util.LruCache
@@ -10,11 +9,10 @@ import kotlinx.coroutines.*
 import java.lang.Integer.max
 import java.lang.Integer.min
 import java.lang.Thread.sleep
-import java.util.*
-import kotlin.collections.HashMap
+import java.util.concurrent.atomic.AtomicInteger
 
 
-class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
+class ParallelAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
     data class GameState(
         val value: Int,
@@ -31,7 +29,13 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         var minMove: Move?
     )
 
-    val transpositionTable = LruCache<Int, GameState>(1000)
+    data class WorkerData(var status: Status, var value: Int? = null, var assignedThread: Thread? = null) {
+        enum class Status {
+            Working,
+            NotStarted
+        }
+    }
+
     val killerTable = LruCache<String, KillerData>(3000)
 
     var evaluator = MaterialEvaluator()
@@ -41,18 +45,88 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         return evaluator.evaluateState(node, player)
     }
 
+    val syncAlpha = AtomicInteger(Int.MIN_VALUE)
+
+    fun startASubThread(node: Node) {
+
+    }
+
+    fun startAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int) {
+
+
+        val numberOfThreads = 8
+        var numberOfIdleThreads = 4
+
+        syncAlpha.set(Int.MIN_VALUE)
+        var mAlpha = alpha
+        var mBeta = beta
+
+        var value = Int.MIN_VALUE
+        var moves = node.getMoves()
+
+        var killerMove = killerTable[node.state.toStr()]
+        if (killerMove == null)
+            killerMove = KillerData(null, null)
+
+
+        value = Int.MIN_VALUE
+
+        if (killerMove.maxMove != null) {
+
+            if (moves.remove(killerMove.maxMove))
+                moves.add(0, killerMove.maxMove!!)
+        }
+
+
+
+        for (move in moves) {
+
+
+            if (numberOfIdleThreads > 0) {
+                numberOfIdleThreads--
+
+                val worker = Thread() {
+
+                    val child = node.getNodeForMove(move)
+                    val score = doAlphaBeta(child, depth - 1, syncAlpha.get(), mBeta, false)
+
+                    if (score > syncAlpha.get()) {
+                        node.bestMove = move
+                        syncAlpha.set(score)
+                    }
+
+                    numberOfIdleThreads++
+                }
+
+                worker.start()
+
+            } else{
+
+                val child = node.getNodeForMove(move)
+                val score = doAlphaBeta(child, depth - 1, syncAlpha.get(), mBeta, false)
+
+                if (score > syncAlpha.get()) {
+                    node.bestMove = move
+                    syncAlpha.set(score)
+                }
+
+
+            }
+        }
+
+
+    }
+
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int, isMax: Boolean): Int {
 
         var mAlpha = alpha
         var mBeta = beta
 
         if (depth == 0 || node.isTerminalState()) {
-            return evaluator.evaluateState(node, player, node.move)
+            return evaluateState(node)
         }
 
         var value = Int.MIN_VALUE
-
-
         var moves = node.getMoves()
         var killerMove = killerTable[node.state.toStr()]
         if (killerMove == null)
@@ -60,12 +134,8 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
 
 
-
         if (isMax) {
             value = Int.MIN_VALUE
-
-
-
 
 
             if (killerMove.maxMove != null) {
@@ -77,6 +147,8 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
             for (move in moves) {
                 val child = node.getNodeForMove(move)
+
+
                 val score = doAlphaBeta(child, depth - 1, mAlpha, mBeta, false)
 
 
@@ -159,13 +231,13 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
                 while (System.currentTimeMillis() - timeStamp < 2000) {
                     depth++
-                    println("Iteration $depth starts")
+                    println("Parallel Iteration $depth starts")
 
-                    doAlphaBeta(
-                        parentNode, depth, Int.MIN_VALUE, Int.MAX_VALUE, true
+                    startAlphaBeta(
+                        parentNode, depth, Int.MIN_VALUE, Int.MAX_VALUE
                     )
 
-                    println("Iteration $depth ends")
+                    println("Parallel Iteration $depth ends")
                     if (parentNode.bestMove != null)
                         bestMove = parentNode.bestMove
 
@@ -181,8 +253,6 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         sleep(1500)
 
         thread.stop()
-
-        transpositionTable.evictAll()
 
         println("It took ${System.currentTimeMillis() - timeStamp} ${bestMove?.type}")
 //        println("node is $parentNode with value $node children ${parentNode.bestMove}")
