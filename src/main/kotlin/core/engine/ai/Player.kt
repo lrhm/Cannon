@@ -5,7 +5,7 @@ import core.engine.Move
 import core.engine.Node
 import core.engine.util.LruCache
 
-open class Player(val player: Int, val type: Type) {
+open class Player(var player: Int, val type: Type) {
 
 
     open fun getMove(engine: Engine): Move {

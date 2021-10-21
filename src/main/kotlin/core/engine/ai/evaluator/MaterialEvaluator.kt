@@ -17,13 +17,24 @@ class MaterialEvaluator(
         3, -3, //possible shots
         8, 6, // number pawn in attack vs defend
         2 // random
+        , 5// singe move distance
     )
 ) : Evaluator {
 
 
-    fun mutateAndCombine(other: MaterialEvaluator): MaterialEvaluator {
+    fun mutateAndCombine1(other: MaterialEvaluator): MaterialEvaluator {
         val newWeights = weights.mapIndexed { index, i ->
-            (i + other.weights[index] + random.nextInt(-2..2)) / 2
+            (i + other.weights[index] + if (random.nextBoolean()) 2 else 1 * random.nextInt(-2..2)) / 2
+        }
+
+        return MaterialEvaluator(newWeights)
+
+    }
+
+
+    fun mutateAndCombine2(other: MaterialEvaluator): MaterialEvaluator {
+        val newWeights = weights.mapIndexed { index, i ->
+            (i + other.weights[index] + random.nextInt(-4..4)) / 2
         }
 
         return MaterialEvaluator(newWeights)
@@ -33,7 +44,6 @@ class MaterialEvaluator(
 
 //    val features = arrayListOf(0, 1)
 
-    val engine = Engine
 
     override fun evaluateState(node: Node, player: Int, move: Move?): Int {
 
@@ -41,14 +51,20 @@ class MaterialEvaluator(
         node.calcMoves()
 
         val myMoves = if (node.player == player) node.myMoves else node.enemyMoves
-//        engine.getPossibleMoves(player, state)
+
         val enemyMoves = if (node.player == player) node.enemyMoves else node.myMoves
 
         if (myMoves.isEmpty() || state.isTownDead(player) || state.pawnCount(player) == 0) // total lost
             return -30000
 
-        if (state.isTownDead((player.otherPlayer())) || state.pawnCount(player.otherPlayer()) == 0 || enemyMoves.isEmpty()) // total win
+        if (state.isTownDead((player.otherPlayer()))) // total win
             return 30000
+        if (state.pawnCount(player.otherPlayer()) == 0 || enemyMoves.isEmpty())
+            return 20000
+
+        // losing state
+        if (node.state.toStr() == node.engine.secondLastState?.toStr())
+            return -1000
 
         val shootCnt = myMoves.filter { it.type == Move.Type.Shoot }.size
         var eShootCnt = enemyMoves.filter { it.type == Move.Type.Shoot }.size
@@ -80,8 +96,8 @@ class MaterialEvaluator(
 //        if (ePawnCount == 0)
 //            ePawnCount = 1
 
-        val distanceToEnemy =-1 * state.calcDistanceToEnemyTown(player)
-        val distanceToTown = 1.0f / state.calcDistanceToMyTown(player)
+        val distanceToEnemy = if (weights[12] == 0) 0.0 else -1 * state.calcDistanceToEnemyTown(player)
+        val distanceToTown = if (weights[13] == 0) 0.0 else -1 * state.calcDistanceToMyTown(player)
 
 //        val numberOfAttackingPawns =  0//state.numberOfMyPawnsInIthStepOfEnemyTown(player,4)
 //        val numberOfDeffendingPawns = 0//state.getHowCloseAreWeDefending(player)
@@ -94,7 +110,8 @@ class MaterialEvaluator(
             captureCnt, eCaptureCnt,
             possibleShots, enemyPossibleShots,
             distanceToEnemy.roundToInt(), distanceToTown.roundToInt(),
-            random.nextInt(5)
+            random.nextInt(5),
+            if (move != null && weights[15] != 0) state.calcMoveDistanceTowardEnemy(player, move).roundToInt() else 0
         )
 
 

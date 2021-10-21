@@ -43,40 +43,46 @@ fun App() {
         if (engine.hasPlayerLost())
             return
 
+        CoroutineScope(Dispatchers.Default).launch {
 
-        if (engine.playerTurn == 0 && engine.playerOne.type == Player.Type.AI) {
-
-            val move = engine.playerOne.getMove(engine)
-            move.applyMove(engine.board, engine.playerTurn)
-            println("moving ${move.type} ${move.from} ${move.to}")
-            engine.turnsPassed++
-            engine.playerTurn = engine.playerTurn.otherPlayer()
+            engine.playATurn()
             CoroutineScope(Dispatchers.Main).launch {
                 board = engine.board.copy()
 
             }
-            return
-
         }
 
-        if (engine.playerTurn == 1 && engine.playerOne.type == Player.Type.AI) {
-            val move = engine.playerTwo.getMove(engine)
-
-            if (move.type == Move.Type.PlaceTown)
-                move.applyPlaceTownMove(engine.board, engine.playerTurn)
-            else move.applyMove(engine.board, engine.playerTurn)
-
-
-            engine.turnsPassed++
-            engine.playerTurn = engine.playerTurn.otherPlayer()
-
-            CoroutineScope(Dispatchers.Main).launch {
-                board = engine.board.copy()
-
-            }
-            return
-
-        }
+//        if (engine.playerTurn == 0 && engine.playerOne.type == Player.Type.AI) {
+//
+//            val move = engine.playerOne.getMove(engine)
+//            move.applyMove(engine.board, engine.playerTurn)
+////            println("moving ${move.type} ${move.from} ${move.to}")
+//            engine.turnsPassed++
+//            engine.playerTurn = engine.playerTurn.otherPlayer()
+//            CoroutineScope(Dispatchers.Main).launch {
+//                board = engine.board.copy()
+//
+//            }
+//            return
+//
+//        }
+//
+//        if (engine.playerTurn == 1 && engine.playerOne.type == Player.Type.AI) {
+//            val move = engine.playerTwo.getMove(engine)
+//
+//            move.applyMove(engine.board, engine.playerTurn)
+//
+//
+//            engine.turnsPassed++
+//            engine.playerTurn = engine.playerTurn.otherPlayer()
+//
+//            CoroutineScope(Dispatchers.Main).launch {
+//                board = engine.board.copy()
+//
+//            }
+//            return
+//
+//        }
 
 
     }
@@ -92,8 +98,8 @@ fun App() {
     val simulator = Simulator()
     fun startGame() {
 
-
-//        simulator.startGame()
+//        simulator.generateAIPool()
+//        simulator.startRandomMatches()
 //        return
         CoroutineScope(Dispatchers.Default).launch {
 
@@ -110,7 +116,7 @@ fun App() {
     }
 
     val imageModifier = Modifier
-        .width(520.dp)
+        .width(500.dp)
         .fillMaxWidth()
 
     DesktopMaterialTheme {
@@ -212,7 +218,7 @@ fun playerSelector(player: Int, onSelectPlayer: (Player) -> Unit) {
 
 }
 
-val engine = Engine
+val engine = Engine()
 
 
 @OptIn(ExperimentalDesktopApi::class)

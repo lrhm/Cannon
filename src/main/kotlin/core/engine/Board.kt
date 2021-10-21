@@ -83,6 +83,24 @@ class Board {
         return sqrt(((i - i1).times(i - i1) + (j - j1).times(j - j1)).toDouble())
     }
 
+    fun calcMoveDistanceTowardEnemy(player: Int, move: Move): Double {
+        val enemyTownPostion = getTownPosition(player.otherPlayer())!!
+        val i = move.to.i
+        val j = move.to.j
+        if (abs(
+                enemyTownPostion.j - j
+            ) > 5 && abs(enemyTownPostion.i - i) > 5
+        )
+            return 0.0
+
+        return calcDistance(i, j, enemyTownPostion.i, enemyTownPostion.j) - calcDistance(
+            move.from.i,
+            move.from.j,
+            enemyTownPostion.i,
+            enemyTownPostion.j
+        )
+    }
+
     fun calcDistanceToEnemyTown(player: Int): Double {
 
         val enemyTownPostion = getTownPosition(player.otherPlayer())!!

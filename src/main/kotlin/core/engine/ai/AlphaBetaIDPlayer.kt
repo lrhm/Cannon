@@ -14,7 +14,8 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
+class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = MaterialEvaluator()) :
+    Player(player, Type.AI) {
 
     data class GameState(
         val value: Int,
@@ -34,11 +35,9 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
     val transpositionTable = LruCache<Int, GameState>(1000)
     val killerTable = LruCache<String, KillerData>(3000)
 
-    var evaluator = MaterialEvaluator()
 
     override fun evaluateState(node: Node): Int {
-
-        return evaluator.evaluateState(node, player)
+        return evaluator.evaluateState(node, player, node.move)
     }
 
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int, isMax: Boolean): Int {
@@ -47,7 +46,7 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         var mBeta = beta
 
         if (depth == 0 || node.isTerminalState()) {
-            return evaluator.evaluateState(node, player, node.move)
+            return evaluateState(node)
         }
 
         var value = Int.MIN_VALUE
@@ -147,7 +146,7 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         val timeStamp = System.currentTimeMillis()
 
         val parentNode = Node(
-            engine.board, engine, engine.playerTurn, maxDepth, true, Int.MIN_VALUE, Int.MIN_VALUE
+            engine.board, engine, engine.playerTurn, 20, true, Int.MIN_VALUE, Int.MIN_VALUE
         )
 
 
@@ -159,13 +158,13 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
                 while (System.currentTimeMillis() - timeStamp < 2000) {
                     depth++
-                    println("Iteration $depth starts")
+//                    println("Iteration $depth starts")
 
                     doAlphaBeta(
                         parentNode, depth, Int.MIN_VALUE, Int.MAX_VALUE, true
                     )
 
-                    println("Iteration $depth ends")
+//                    println("Iteration $depth ends")
                     if (parentNode.bestMove != null)
                         bestMove = parentNode.bestMove
 
@@ -189,6 +188,10 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
         if (bestMove == null)
             return engine.getPossibleMoves(engine.playerTurn).random()
+
+        if (bestMove!!.type == Move.Type.PlaceTown)
+            bestMove = engine.getPossibleMoves(engine.playerTurn).random()
+
         return bestMove!!
 
         val moves = engine.getPossibleMoves(player)

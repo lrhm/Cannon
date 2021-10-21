@@ -5,13 +5,31 @@ import core.engine.ai.*
 import kotlinx.coroutines.coroutineScope
 import kotlin.math.roundToInt
 
-object Engine {
+class Engine {
+//
+//    companion object{
+//        instance = En
+//    }
 
     var board = Board()
-    var playerOne = AlphaBetaIDPlayer(0, 4)
-    var playerTwo = AlphaBetaIDPlayer(1, 4)
+    var playerOne = AlphaBetaIDPlayer(0)
+    var playerTwo = AlphaBetaIDPlayer(1)
     var playerTurn = 0
     var turnsPassed = 0
+
+
+    var lastState: Board? = null
+    var secondLastState: Board? = null
+
+    fun getWinnerAI(): AlphaBetaIDPlayer {
+
+        if (playerTurn == 0)
+            return playerTwo
+        if (playerTurn == 1)
+            return playerOne
+
+        return playerOne
+    }
 
 
     fun getPlayerForTurn(): Player {
@@ -29,11 +47,11 @@ object Engine {
 
     fun hasPlayerLost(): Boolean {
 
-        if (turnsPassed < 2)
+        if (turnsPassed <= 2)
             return false
 
 
-        val player = getPlayerForTurn()
+//        val player = getPlayerForTurn()
         val row = if (playerTurn == 0) 9 else 0
 
         var isTownDead = true
@@ -63,12 +81,25 @@ object Engine {
 
 //        readLine()
         coroutineScope {
-            playerTurn = turnsPassed.mod(2)
-            val moves = getPossibleMoves(playerTurn)
-            val move = moves.random()
+
+            if (hasPlayerLost())
+                return@coroutineScope
+
+            val move = if (playerTurn == 0)
+                playerOne.getMove(this@Engine)
+            else playerTwo.getMove(this@Engine)
+
+            secondLastState = lastState?.copy()
+            lastState = board.copy()
 
             move.applyMove(board, playerTurn)
             turnsPassed++
+            playerTurn = playerTurn.otherPlayer()
+
+
+//            if (hasPlayerLost())
+//                return@coroutineScope
+
 
         }
 
@@ -420,6 +451,7 @@ open class Move(val type: Type, var from: Position, var to: Position) {
     }
 
     fun applyMove(board: Board, player: Int) {
+
 
         when (type) {
             Type.PlaceTown -> applyPlaceTownMove(board, player)

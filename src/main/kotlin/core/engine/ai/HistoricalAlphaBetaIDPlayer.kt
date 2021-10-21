@@ -48,7 +48,7 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
 
     override fun evaluateState(node: Node): Int {
 
-        return evaluator.evaluateState(node, player)
+        return evaluator.evaluateState(node, player, node.move)
     }
 
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int, isMax: Boolean): Int {
@@ -115,7 +115,7 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
 //                }
 //            }
 
-            moves.sortBy {
+            moves.sortedByDescending {
                 history.maxMoves[it]?.value
             }
             if (killerMove.maxMove != null) {
@@ -169,9 +169,8 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
 //                history.minMoves.toSortedMap(Comparator.comparingInt { history.maxMoves[it]!!.value })
 
 
-//            moves.sortBy { history.minMoves[it]?.value }
-
             moves = moves.asReversed()
+            moves.sortBy { history.minMoves[it]?.value }
 
 //            var idx = 0
 //            for (move in allHistoricalMoves.keys.reversed()) {
@@ -200,7 +199,7 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
                 } else doAlphaBeta(child, depth - 1, mAlpha, mBeta, true)
 
                 if (depth - 1 > (historicalMove?.depth ?: -1))
-                    history.minMoves[move] = MoveHistory(score, depth-1)
+                    history.minMoves[move] = MoveHistory(score, depth - 1)
 
 
                 value = min(
