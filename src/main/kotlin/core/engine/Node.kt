@@ -35,6 +35,15 @@ class Node(
     }
 
 
+    override fun equals(other: Any?): Boolean {
+        if (other is Node) {
+            if (other.state.toStr() == state.toStr() && isMax == other.isMax)
+                return true
+        }
+        return super.equals(other)
+    }
+
+
     lateinit var parent: Node
 
 

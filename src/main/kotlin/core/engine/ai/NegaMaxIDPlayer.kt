@@ -5,9 +5,7 @@ import core.engine.util.LruCache
 import core.engine.Engine
 import core.engine.Move
 import core.engine.ai.evaluator.MaterialEvaluator
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.lang.Integer.max
 import java.lang.Integer.min
 import java.lang.Thread.sleep
@@ -20,11 +18,19 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
         return evaluator.evaluateState(node, player)
     }
 
-    data class GameState(val value: Int, val flag: Flag, val depth: Int, val bestMove: Move?) {
+    data class GameState(
+        val value: Int,
+        val flag: Flag,
+        val depth: Int,
+        val bestMove: Move?,
+        val pruneMove: Move? = null
+    ) {
         enum class Flag { Exact, LowerBound, UpperBound }
     }
 
     val transpositionHash = LruCache<Int, GameState>(1000000)
+
+    val killerTable = LruCache<Int, Move>(100000)
 
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int): Int {
 
@@ -68,9 +74,15 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
         val moves = node.getMoves()
 
         if (entry?.bestMove != null) {
-            moves.add(0, entry.bestMove!!)
+            if (moves.remove(entry.bestMove))
+                moves.add(0, entry.bestMove!!)
         }
+        val killerMove = killerTable[node.hashCode()]
 
+        if (killerMove != null) {
+            if (moves.remove(killerMove))
+                moves.add(0, killerMove)
+        }
         for (move in moves) {
 
             val childNode = node.getNodeForMove(move)
@@ -85,14 +97,16 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
 
             if (value > alpha)
                 mAlpha = score
-            if (score >= beta)
+            if (score >= beta) {
+                killerTable.put(node.hashCode(), move)
                 break
+            }
         }
 
 
         val flag = if (score <= alpha)
             GameState.Flag.UpperBound
-        else if (score >= beta)
+        else if (score >= mBeta)
             GameState.Flag.LowerBound
         else GameState.Flag.Exact
 
@@ -121,22 +135,31 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
 //        doAlphaBeta(parentNode, 5, Int.MIN_VALUE, Int.MAX_VALUE)
 
         var bestMove: Move? = null
-        val job = CoroutineScope(Dispatchers.IO).launch {
+        var d = 1
+
+        val thread = Thread() {
+            try {
 
 
-            var d = 1
-            while (System.currentTimeMillis() - startTime < 2000) {
-                println("ID ${d} starts")
-                doAlphaBeta(parentNode, d, Int.MIN_VALUE, Int.MAX_VALUE)
-                bestMove = parentNode.bestMove
-                d++
+                while (System.currentTimeMillis() - startTime < 2000) {
+                    println("ID ${d} starts")
+                    doAlphaBeta(parentNode, d, Int.MIN_VALUE, Int.MAX_VALUE)
+                    if (parentNode.bestMove != null)
+                        bestMove = parentNode.bestMove
+
+                    println("ID ${d} ends")
+                    d++
+
+                }
+            } catch (e: Exception){
+
             }
         }
 
-        sleep(2000)
+        thread.start()
+        sleep(1500)
 
-        job.cancel()
-
+        thread.stop()
 
 //        transpositionHash
         transpositionHash.evictAll()

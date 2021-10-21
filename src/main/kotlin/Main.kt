@@ -95,7 +95,7 @@ fun App() {
 
 //        simulator.startGame()
 //        return
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Default).launch {
 
             if (isGameStarted.not())
                 return@launch
@@ -126,7 +126,7 @@ fun App() {
                     onUpdate = {
                         board = board.copy()
                         engine.board = board
-                        doNextTurn()
+//                        doNextTurn()
 //                        if (engine.turnsPassed == 2)
 //                            startGame()
                     }

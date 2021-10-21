@@ -10,7 +10,7 @@ class MaterialEvaluator(
     val weights: List<Int> = arrayListOf(
         3, -2,
         4, -2,
-        20, -20,
+        21, -23,
         5, -4,
         5, -4,
         6, -6,
@@ -43,10 +43,10 @@ class MaterialEvaluator(
         val enemyMoves = if (node.player == player) node.enemyMoves else node.myMoves
 
         if (myMoves.isEmpty() || state.isTownDead(player) || state.pawnCount(player) == 0) // total lost
-            return -300
+            return -30000
 
         if (state.isTownDead((player.otherPlayer())) || state.pawnCount(player.otherPlayer()) == 0 || enemyMoves.isEmpty()) // total win
-            return 300
+            return 30000
 
         val shootCnt = myMoves.filter { it.type == Move.Type.Shoot }.size
         var eShootCnt = enemyMoves.filter { it.type == Move.Type.Shoot }.size
@@ -86,7 +86,7 @@ class MaterialEvaluator(
             shootCnt, eShootCnt,
             captureCnt, eCaptureCnt,
             possibleShots, enemyPossibleShots,
-            random.nextInt(4)
+            random.nextInt(5)
         )
 
 //        val weights = arrayListOf(

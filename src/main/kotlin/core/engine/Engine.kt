@@ -8,8 +8,8 @@ import kotlin.math.roundToInt
 object Engine {
 
     var board = Board()
-    var playerOne = AlphaBetaPlayer(0, 4)
-    var playerTwo = AlphaBetaIDPlayer(1, 4)
+    var playerOne = AlphaBetaIDPlayer(0, 4)
+    var playerTwo = NegaMaxIDPlayer(1, 4)
     var playerTurn = 0
     var turnsPassed = 0
 
@@ -345,7 +345,6 @@ object Engine {
     }
 
 
-
 }
 
 fun Int.isEnemySoldier(player: Int): Boolean {
@@ -400,6 +399,15 @@ open class Move(val type: Type, var from: Position, var to: Position) {
         PlaceTown
     }
 
+    override fun equals(other: Any?): Boolean {
+
+        if (other is Move) {
+            return type == other.type && from == other.from && to == other.to
+        }
+
+        return super.equals(other)
+    }
+
     fun applyPlaceTownMove(board: Board, player: Int) {
 
 //        println("apply town for player $player")
@@ -433,4 +441,10 @@ data class Position(val row: Int, val column: Int) {
     val i = row
     val j = column
 
+    override fun equals(other: Any?): Boolean {
+
+        if (other is Position)
+            return other.row == row && other.column == column
+        return super.equals(other)
+    }
 }

@@ -6,10 +6,7 @@ import core.engine.LRUCache
 import core.engine.Move
 import core.engine.ai.evaluator.MaterialEvaluator
 import core.engine.util.LruCache
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.lang.Integer.max
 import java.lang.Integer.min
 import java.lang.Thread.sleep
@@ -27,7 +24,14 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         enum class Flag { Exact, LowerBound, UpperBound }
     }
 
-    val transpositionTable = LruCache<String, GameState>(1000)
+    data class KillerData(
+        var maxMove: Move?,
+        var minMove: Move?
+    )
+
+    val transpositionTable = LruCache<Int, GameState>(1000)
+    val killerTable = LruCache<String, KillerData>(3000)
+
     var evaluator = MaterialEvaluator()
 
     override fun evaluateState(node: Node): Int {
@@ -40,13 +44,12 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         var mAlpha = alpha
         var mBeta = beta
 
-//        val entry = transpositionTable[node.state.toStr()]
+//        var entry = transpositionTable[node.hashCode()]
 //        if (entry != null && entry.depth >= depth) {
 //            when (entry.flag) {
-//                GameState.Flag.Exact -> {
-//
-//                    return entry.value
-//                }
+////                GameState.Flag.Exact -> {
+////                    return entry.value
+////                }
 //                GameState.Flag.LowerBound -> {
 //
 //                    mAlpha = max(alpha, entry.value)
@@ -59,6 +62,9 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 //                }
 //
 //            }
+//
+////            if (mAlpha > mBeta)
+////                return entry.value
 //        }
 
 //        node.player = node.player.otherPlayer()
@@ -71,27 +77,56 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
 
         var moves = node.getMoves()
+        var killerMove = killerTable[node.state.toStr()]
+        if (killerMove == null)
+            killerMove = KillerData(null, null)
 
         if (isMax) {
             value = Int.MIN_VALUE
+
+//            if (entry?.bestMaxMove != null) {
+//
+//                if (moves.remove(entry.bestMaxMove))
+//                    moves.add(0, entry.bestMaxMove!!)
+//            }
+
+            if (killerMove.maxMove != null) {
+
+                if (moves.remove(killerMove.maxMove))
+                    moves.add(0, killerMove.maxMove!!)
+            }
+
 
             for (move in moves) {
                 val child = node.getNodeForMove(move)
                 val score = doAlphaBeta(child, depth - 1, mAlpha, mBeta, false)
                 if (score > value) {
                     node.bestMove = move
+
                 }
                 value = max(
                     value,
                     score
                 )
 
-                if (score >= mBeta)
+                if (score >= mBeta) {
+                    killerMove.maxMove = move
+                    killerTable.put(node.state.toStr(), killerMove)
                     break
+                }
                 mAlpha = max(mAlpha, value)
 
             }
 
+//            entry = GameState(
+//                value,
+//                if (value >= mBeta) GameState.Flag.LowerBound else GameState.Flag.Exact,
+//                depth,
+//                node.bestMove,
+//                null
+//            )
+
+//            transpositionTable.put(node.hashCode(), entry)
 
             return value
 
@@ -99,6 +134,17 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
             value = Int.MAX_VALUE
 
             moves = moves.asReversed()
+
+//            if (entry?.bestMinMove != null) {
+//
+//                if (moves.remove(entry.bestMaxMove))
+//                    moves.add(0, entry.bestMaxMove!!)
+//            }
+
+            if (killerMove.minMove != null) {
+                if (moves.remove(killerMove.minMove))
+                    moves.add(0, killerMove.minMove!!)
+            }
 
             for (move in moves) {
 
@@ -113,12 +159,28 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
                     value,
                     score
                 )
-                if (value <= mAlpha)
+                if (value <= mAlpha) {
+
+                    killerMove.minMove = move
+
+                    killerTable.put(node.state.toStr(), killerMove)
                     break
+                }
 
                 mBeta = min(mAlpha, value)
 
             }
+
+
+//            entry = GameState(
+//                value,
+//                if (value <= mAlpha) GameState.Flag.UpperBound else GameState.Flag.Exact,
+//                depth,
+//                null,
+//                node.bestMove
+//            )
+//
+//            transpositionTable.put(node.hashCode(), entry)
 
             return value
 
@@ -138,20 +200,37 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
         var depth = 0
         var bestMove: Move? = null
-        val job = CoroutineScope(Dispatchers.IO).launch {
-            while (System.currentTimeMillis() - timeStamp < 2000) {
-                depth++
-                doAlphaBeta(
-                    parentNode, depth, Int.MIN_VALUE, Int.MAX_VALUE, true
-                )
-                println("depth $depth")
-                bestMove = parentNode.bestMove
+        val thread = Thread(Runnable {
+            try {
+
+
+                while (System.currentTimeMillis() - timeStamp < 2000) {
+                    depth++
+                    println("Iteration $depth starts")
+
+                    doAlphaBeta(
+                        parentNode, depth, Int.MIN_VALUE, Int.MAX_VALUE, true
+                    )
+
+                    println("Iteration $depth ends")
+                    if (parentNode.bestMove != null)
+                        bestMove = parentNode.bestMove
+
+
+
+                }
+            } catch (e: Exception) {
 
             }
-        }
 
-        sleep(2000)
-        job.cancel()
+        })
+        thread.start()
+
+        sleep(1500)
+
+        thread.stop()
+
+        transpositionTable.evictAll()
 
         println("It took ${System.currentTimeMillis() - timeStamp} ${bestMove?.type}")
 //        println("node is $parentNode with value $node children ${parentNode.bestMove}")
