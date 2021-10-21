@@ -2,7 +2,6 @@ package core.engine.ai
 
 import core.engine.Node
 import core.engine.Engine
-import core.engine.LRUCache
 import core.engine.Move
 import core.engine.ai.evaluator.MaterialEvaluator
 import core.engine.util.LruCache
@@ -10,11 +9,10 @@ import kotlinx.coroutines.*
 import java.lang.Integer.max
 import java.lang.Integer.min
 import java.lang.Thread.sleep
-import java.util.*
 import kotlin.collections.HashMap
 
 
-class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
+class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
     data class GameState(
         val value: Int,
@@ -31,6 +29,18 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         var minMove: Move?
     )
 
+    data class GameHistory(
+        val minMoves: HashMap<Move, MoveHistory> = HashMap(),
+        val maxMoves: HashMap<Move, MoveHistory> = HashMap()
+    )
+
+
+    data class MoveHistory(
+        val value: Int,
+        val depth: Int
+    )
+
+    val historyCache = LruCache<String, GameHistory>(1000000)
     val transpositionTable = LruCache<Int, GameState>(1000)
     val killerTable = LruCache<String, KillerData>(3000)
 
@@ -46,9 +56,34 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         var mAlpha = alpha
         var mBeta = beta
 
+//        var entry = transpositionTable[node.hashCode()]
+//        if (entry != null && entry.depth >= depth) {
+//            when (entry.flag) {
+////                GameState.Flag.Exact -> {
+////                    return entry.value
+////                }
+//                GameState.Flag.LowerBound -> {
+//
+//                    mAlpha = max(alpha, entry.value)
+//                }
+//
+//                GameState.Flag.UpperBound -> {
+//
+//                    mBeta = min(beta, entry.value)
+//
+//                }
+//
+//            }
+//
+////            if (mAlpha > mBeta)
+////                return entry.value
+//        }
+
+//        node.player = node.player.otherPlayer()
         if (depth == 0 || node.isTerminalState()) {
             return evaluateState(node)
         }
+
 
         var value = Int.MIN_VALUE
 
@@ -58,16 +93,31 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         if (killerMove == null)
             killerMove = KillerData(null, null)
 
+        var history = historyCache[node.state.toStr()]
 
-
+        if (history == null)
+            history = GameHistory()
 
         if (isMax) {
             value = Int.MIN_VALUE
 
+//            val allHistoricalMoves =
+//                history.maxMoves.toSortedMap(Comparator.comparingInt { history.maxMoves[it]!!.value })
+//
+//            var idx = 0
+//
+////            moves.removeAll(allHistoricalMoves.keys)
+////            moves.addAll(allHistoricalMoves.keys)
+//            for (move in allHistoricalMoves.keys) {
+//                if (moves.remove(move)) {
+//                    moves.add(idx, move)
+//                    idx++
+//                }
+//            }
 
-
-
-
+            moves.sortBy {
+                history.maxMoves[it]?.value
+            }
             if (killerMove.maxMove != null) {
 
                 if (moves.remove(killerMove.maxMove))
@@ -75,13 +125,19 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
             }
 
 
+
+
             for (move in moves) {
                 val child = node.getNodeForMove(move)
 
+                val score = if (history.maxMoves[move]?.depth ?: -1 >= depth - 1) {
+//                    println("does history happen aggain and again?")
+                    history.maxMoves[move]!!.value
+                } else doAlphaBeta(child, depth - 1, mAlpha, mBeta, false)
 
-                val score = doAlphaBeta(child, depth - 1, mAlpha, mBeta, false)
-
-
+                val historicalMove = history.maxMoves[move]
+                if (depth - 1 > (historicalMove?.depth ?: -1))
+                    history.maxMoves[move] = MoveHistory(score, depth - 1)
 
                 if (score > value) {
                     node.bestMove = move
@@ -101,6 +157,7 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
             }
 
+            historyCache.put(node.state.toStr(), history)
 
 
             return value
@@ -108,11 +165,21 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
         } else {
             value = Int.MAX_VALUE
 
+//            val allHistoricalMoves =
+//                history.minMoves.toSortedMap(Comparator.comparingInt { history.maxMoves[it]!!.value })
+
+
+//            moves.sortBy { history.minMoves[it]?.value }
 
             moves = moves.asReversed()
 
-            var idx = 0
-
+//            var idx = 0
+//            for (move in allHistoricalMoves.keys.reversed()) {
+//                if (moves.remove(move)) {
+//                    moves.add(idx, move)
+//                    idx++
+//                }
+//            }
 
 
             if (killerMove.minMove != null) {
@@ -121,8 +188,20 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
             }
 
             for (move in moves) {
+
+
                 val child = node.getNodeForMove(move)
-                val score = doAlphaBeta(child, depth - 1, mAlpha, mBeta, true)
+
+                val historicalMove = history.minMoves[move]
+
+                val score = if (historicalMove?.depth ?: -1 >= depth - 1) {
+//                    println("does history happen aggain and again?")
+                    history.minMoves[move]!!.value
+                } else doAlphaBeta(child, depth - 1, mAlpha, mBeta, true)
+
+                if (depth - 1 > (historicalMove?.depth ?: -1))
+                    history.minMoves[move] = MoveHistory(score, depth-1)
+
 
                 value = min(
                     value,
@@ -131,12 +210,18 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
                 if (value <= mAlpha) {
 
                     killerMove.minMove = move
+
                     killerTable.put(node.state.toStr(), killerMove)
                     break
                 }
+
                 mBeta = min(mAlpha, value)
+
             }
 
+
+
+            historyCache.put(node.state.toStr(), history)
             return value
 
         }
@@ -161,13 +246,13 @@ class AlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Typ
 
                 while (System.currentTimeMillis() - timeStamp < 2000) {
                     depth++
-                    println("Iteration $depth starts")
+                    println("Historical Iteration $depth starts")
 
                     doAlphaBeta(
                         parentNode, depth, Int.MIN_VALUE, Int.MAX_VALUE, true
                     )
 
-                    println("Iteration $depth ends")
+                    println("Historical Iteration $depth ends")
                     if (parentNode.bestMove != null)
                         bestMove = parentNode.bestMove
 

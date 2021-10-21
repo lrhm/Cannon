@@ -48,7 +48,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
             when (entry.flag) {
                 GameState.Flag.Exact -> {
 
-                    return entry.value
+//                    return entry.value
                 }
                 GameState.Flag.LowerBound -> {
 
@@ -64,8 +64,8 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
             }
 
 
-            if (mAlpha > mBeta)
-                return entry.value
+//            if (mAlpha > mBeta)
+//                return entry.value
         }
 
         if (depth == 0 || node.isTerminalState())

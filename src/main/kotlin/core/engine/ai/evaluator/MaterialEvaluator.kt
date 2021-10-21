@@ -8,13 +8,13 @@ val random = Random(System.currentTimeMillis())
 
 class MaterialEvaluator(
     val weights: List<Int> = arrayListOf(
-        3, -2,
-        4, -2,
-        21, -23,
-        5, -4,
-        5, -4,
-        6, -6,
-        2
+        3, -2, //moves
+        2, -2, //cannons
+        25, -28, //pawns
+        5, -4, //shoot
+        5, -4, //capture
+        3, -3, //possible shots
+        2 // random
     )
 ) : Evaluator {
 

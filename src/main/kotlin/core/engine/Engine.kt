@@ -9,7 +9,7 @@ object Engine {
 
     var board = Board()
     var playerOne = AlphaBetaIDPlayer(0, 4)
-    var playerTwo = NegaMaxIDPlayer(1, 4)
+    var playerTwo = HistoricalAlphaBetaIDPlayer(1, 4)
     var playerTurn = 0
     var turnsPassed = 0
 
