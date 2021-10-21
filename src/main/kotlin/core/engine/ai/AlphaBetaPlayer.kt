@@ -13,7 +13,7 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
 
 
     //    val transpositionTable = LRUCache<String, Node?>(1000)
-    val evaluator = MaterialEvaluator()
+    var evaluator = MaterialEvaluator()
 
     override fun evaluateState(node: Node): Int {
         return evaluator.evaluateState(node.state, player)

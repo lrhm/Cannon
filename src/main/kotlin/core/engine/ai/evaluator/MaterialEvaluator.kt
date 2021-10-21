@@ -1,11 +1,32 @@
 package core.engine.ai.evaluator
 
 import core.engine.*
+import kotlin.random.Random
+import kotlin.random.nextInt
 
-class MaterialEvaluator : Evaluator {
+val random = Random(System.currentTimeMillis())
+
+class MaterialEvaluator(
+    val weights: List<Int> = arrayListOf(
+        3, -2,
+        4, -2,
+        20, -20,
+        5, -4,
+        5, -4,
+        6, -6,
+        2
+    )
+) : Evaluator {
 
 
-    val weights = arrayListOf(0, 1)
+    fun mutateAndCombine(other: MaterialEvaluator): MaterialEvaluator {
+        val newWeights = weights.mapIndexed { index, i ->
+            (i + other.weights[index] + random.nextInt(-2..2)) / 2
+        }
+
+        return MaterialEvaluator(newWeights)
+
+    }
 
 
 //    val features = arrayListOf(0, 1)
@@ -64,15 +85,15 @@ class MaterialEvaluator : Evaluator {
             random.nextInt(4)
         )
 
-        val weights = arrayListOf(
-            3, -2,
-            4, -2,
-            20, -20,
-            5, -4,
-            5, -4,
-            6, -6,
-            2
-        )
+//        val weights = arrayListOf(
+//            3, -2,
+//            4, -2,
+//            20, -20,
+//            5, -4,
+//            5, -4,
+//            6, -6,
+//            2
+//        )
 
         val res = features.reduceIndexed { index, acc, i -> acc + i * weights[index] }
 

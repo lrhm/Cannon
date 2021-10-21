@@ -28,6 +28,7 @@ import core.engine.Engine
 import core.engine.Move
 import core.engine.Position
 import core.engine.otherPlayer
+import core.engine.util.Simulator
 
 @Composable
 @Preview
@@ -46,16 +47,10 @@ fun App() {
         if (engine.playerTurn == 0 && engine.playerOne.type == Player.Type.AI) {
 
             val move = engine.playerOne.getMove(engine)
-
-            if (move.type == Move.Type.PlaceTown)
-                move.applyPlaceTownMove(engine.board, engine.playerTurn)
-            else move.applyMove(engine.board, engine.playerTurn)
-
-
+            move.applyMove(engine.board, engine.playerTurn)
             println("moving ${move.type} ${move.from} ${move.to}")
             engine.turnsPassed++
             engine.playerTurn = engine.playerTurn.otherPlayer()
-
             board = engine.board.copy()
             return
 
@@ -68,7 +63,7 @@ fun App() {
                 move.applyPlaceTownMove(engine.board, engine.playerTurn)
             else move.applyMove(engine.board, engine.playerTurn)
 
-            println("moving ${move.type} ${move.from} ${move.to}")
+
             engine.turnsPassed++
             engine.playerTurn = engine.playerTurn.otherPlayer()
 
@@ -88,9 +83,12 @@ fun App() {
         isGameStarted = false
     }
 
+    val simulator = Simulator()
     fun startGame() {
 
 
+        simulator.startGame()
+        return
         CoroutineScope(Dispatchers.Main).launch {
 
             if (isGameStarted.not())
@@ -98,6 +96,7 @@ fun App() {
             doNextTurn()
             delay(100)
             startGame()
+
 
 
         }
@@ -136,14 +135,14 @@ fun App() {
 
                 playerSelector(0) {
 
-                    engine.playerOne = it
+//                    engine.playerOne = it
                 }
 
                 Text("Player 1 : ", modifier = Modifier.padding(20.dp))
 
                 playerSelector(1) {
 
-                    engine.playerTwo = it
+//                    engine.playerTwo = it
                 }
 
             }
@@ -271,7 +270,8 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
                         Position(
                             i,
                             j
-                        ), board.board[i][j], isSelectable(i, j)) { position ->
+                        ), board.board[i][j], isSelectable(i, j)
+                    ) { position ->
 
                         if (isSelectable(position.row, position.column)) {
 
@@ -313,10 +313,11 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
 
                             if (selectedPosition.i == -1) {
 
-                                val selectableMoves = possibleMoves.filter { it.from == Position(
-                                    i,
-                                    j
-                                )
+                                val selectableMoves = possibleMoves.filter {
+                                    it.from == Position(
+                                        i,
+                                        j
+                                    )
                                 }.find {
                                     (it.type == Move.Type.Slide || it.type == Move.Type.Forward ||
                                             it.type == Move.Type.Retreat || it.type == Move.Type.Capture)

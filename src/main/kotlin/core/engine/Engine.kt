@@ -11,16 +11,11 @@ import kotlin.math.roundToInt
 object Engine {
 
     var board = Board()
-    var playerOne: Player = AlphaBetaPlayer(0, 5)
-    var playerTwo: Player = AlphaBetaPlayer(1, 5)
+    var playerOne = AlphaBetaPlayer(0, 4)
+    var playerTwo = AlphaBetaPlayer(1, 4)
     var playerTurn = 0
     var turnsPassed = 0
 
-
-//    companion object {
-//        @JvmStatic
-//        val instance = Engine()
-//    }
 
     fun getPlayerForTurn(): Player {
         if (playerTurn == 0)
