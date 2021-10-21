@@ -33,10 +33,14 @@ class MaterialEvaluator(
 
     val engine = Engine
 
-    override fun evaluateState(state: Board, player: Int): Int {
+    override fun evaluateState(node: Node, player: Int): Int {
 
-        val myMoves = engine.getPossibleMoves(player, state)
-        val enemyMoves = engine.getPossibleMoves(player.otherPlayer(), state)
+        val state = node.state
+        node.calcMoves()
+
+        val myMoves = if (node.player == player) node.myMoves else node.enemyMoves
+//        engine.getPossibleMoves(player, state)
+        val enemyMoves = if (node.player == player) node.enemyMoves else node.myMoves
 
         if (myMoves.isEmpty() || state.isTownDead(player) || state.pawnCount(player) == 0) // total lost
             return -300

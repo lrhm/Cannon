@@ -5,5 +5,5 @@ import core.engine.Node
 
 interface Evaluator {
 
-    fun evaluateState(state: Board, player: Int): Int
+    fun evaluateState(state: Node, player: Int): Int
 }

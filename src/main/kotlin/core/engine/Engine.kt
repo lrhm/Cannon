@@ -1,10 +1,7 @@
 package core.engine
 
 import core.engine.*
-import core.engine.ai.AlphaBetaPlayer
-import core.engine.ai.NegaMaxIDPlayer
-import core.engine.ai.NegaMaxPlayer
-import core.engine.ai.Player
+import core.engine.ai.*
 import kotlinx.coroutines.coroutineScope
 import kotlin.math.roundToInt
 
@@ -12,7 +9,7 @@ object Engine {
 
     var board = Board()
     var playerOne = AlphaBetaPlayer(0, 4)
-    var playerTwo = AlphaBetaPlayer(1, 4)
+    var playerTwo = AlphaBetaIDPlayer(1, 4)
     var playerTurn = 0
     var turnsPassed = 0
 
@@ -405,7 +402,7 @@ open class Move(val type: Type, var from: Position, var to: Position) {
 
     fun applyPlaceTownMove(board: Board, player: Int) {
 
-        println("apply town for player $player")
+//        println("apply town for player $player")
         if (player == 0) {
             board.board[to.row][to.column] = 3
 

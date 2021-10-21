@@ -21,10 +21,10 @@ class Simulator {
 
         if (engine.hasPlayerLost()) {
 
-            if (engine.playerTurn == 0) {
-                winnerWeights.add(engine.playerTwo.evaluator)
-            } else
-                winnerWeights.add(engine.playerOne.evaluator)
+//            if (engine.playerTurn == 0) {
+//                winnerWeights.add(engine.playerTwo.evaluator)
+//            } else
+//                winnerWeights.add(engine.playerOne.evaluator)
             reset()
             return
 
@@ -76,7 +76,7 @@ class Simulator {
 
             val otherEval = winnerWeights[1].mutateAndCombine(winnerWeights[2])
             engine.playerOne.evaluator = newEvaluator
-            engine.playerTwo.evaluator = otherEval
+//            engine.playerTwo.evaluator = otherEval
             winnerWeights.removeAll { true }
 
             println("new weights are found, start again ")

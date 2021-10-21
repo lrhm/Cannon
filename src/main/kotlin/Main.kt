@@ -51,7 +51,10 @@ fun App() {
             println("moving ${move.type} ${move.from} ${move.to}")
             engine.turnsPassed++
             engine.playerTurn = engine.playerTurn.otherPlayer()
-            board = engine.board.copy()
+            CoroutineScope(Dispatchers.Main).launch {
+                board = engine.board.copy()
+
+            }
             return
 
         }
@@ -67,7 +70,10 @@ fun App() {
             engine.turnsPassed++
             engine.playerTurn = engine.playerTurn.otherPlayer()
 
-            board = engine.board.copy()
+            CoroutineScope(Dispatchers.Main).launch {
+                board = engine.board.copy()
+
+            }
             return
 
         }
@@ -87,16 +93,15 @@ fun App() {
     fun startGame() {
 
 
-        simulator.startGame()
-        return
-        CoroutineScope(Dispatchers.Main).launch {
+//        simulator.startGame()
+//        return
+        CoroutineScope(Dispatchers.IO).launch {
 
             if (isGameStarted.not())
                 return@launch
             doNextTurn()
             delay(100)
             startGame()
-
 
 
         }
