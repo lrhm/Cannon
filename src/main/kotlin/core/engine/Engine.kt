@@ -13,7 +13,7 @@ class Engine {
 
 
     var playerOne: Player = AlphaBetaPlayer(0, 5)
-    var playerTwo: Player = NegaMaxPlayer(1, 5)
+    var playerTwo: Player = NegaMaxIDPlayer(1, 5)
 
     var playerTurn = 0
 

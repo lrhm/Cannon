@@ -14,7 +14,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
         enum class Flag { Exact, LowerBound, UpperBound }
     }
 
-    val transpositionHash = LruCache<Int, GameState>(500)
+    val transpositionHash = LruCache<String, GameState>(1000000)
 
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int): Int {
 
@@ -26,8 +26,8 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
         var mBeta = beta
 
 
-        var entry = transpositionHash[node.hashCode()]
-        if (entry != null) {
+        var entry = transpositionHash[node.state.toStr()]
+        if (entry != null && entry.depth >= depth) {
 
             when (entry.flag) {
                 GameState.Flag.Exact -> {
@@ -53,7 +53,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
         }
 
         if (depth == 0 || node.isTerminalState())
-            return node.evaluateState()
+            return node.evaluateState(player)
 
         val moves = node.getMoves()
 
@@ -65,14 +65,14 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
             value = -1 * doAlphaBeta(childNode, depth - 1, -mBeta, -mAlpha)
 
 
-            if (value > score) {
+            if (value  > score) {
                 score = value
                 node.bestMove = move
             }
 
             if (value > alpha)
                 mAlpha = score
-            if (score >= beta)
+            if (score  >= beta)
                 break
         }
 
@@ -85,7 +85,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
 
         entry = GameState(score, flag, depth)
 
-        transpositionHash.put(node.hashCode(), entry)
+        transpositionHash.put(node.state.toStr(), entry)
 
         return score
 
@@ -108,7 +108,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
 //        doAlphaBeta(parentNode, 5, Int.MIN_VALUE, Int.MAX_VALUE)
 
         var d = 1
-        while (d <= 6 && System.currentTimeMillis() - startTime < 1000) {
+        while (d <= maxDepth && System.currentTimeMillis() - startTime < 1000) {
             println("ID ${d} starts")
             doAlphaBeta(parentNode, d, Int.MIN_VALUE, Int.MAX_VALUE)
             d++

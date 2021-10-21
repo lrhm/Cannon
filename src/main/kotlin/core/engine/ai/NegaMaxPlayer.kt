@@ -14,7 +14,7 @@ class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI
 
 
         if (depth == 0 || node.isTerminalState())
-            return node.evaluateState(player)
+            return node.evaluateState()
 
 //        val children = node.getChildNodes()
 

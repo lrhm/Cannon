@@ -135,7 +135,7 @@ class Node(
 
         var result =
             ((myMoves.size.toFloat() / enemyMoves.size) * 2 + 6 * (myCannons.toFloat() / enemyCannons) +
-                    50 * (state.pawnCount(player).toFloat() / state.pawnCount(player.otherPlayer())) +
+                    100 * (state.pawnCount(player).toFloat() / state.pawnCount(player.otherPlayer())) +
                     (6 * (shootCnt.toFloat() / eShootCnt))
                     + 2 * (captureCnt.toFloat() / eCaptureCnt)
                     + 4 * (possibleShots / enemyPossibleShots)
