@@ -1,9 +1,9 @@
 package core.engine.ai
 
 import core.engine.Node
-import src.main.kotlin.core.engine.Engine
-import src.main.kotlin.core.engine.Move
-import src.main.kotlin.core.engine.otherPlayer
+import core.engine.Engine
+import core.engine.Move
+import core.engine.otherPlayer
 import java.lang.Integer.max
 import java.lang.Integer.min
 

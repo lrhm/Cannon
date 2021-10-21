@@ -47,7 +47,7 @@ fun App() {
 
             val move = engine.playerOne.getMove(engine)
 
-            if (move.type == _root_ide_package_.core.engine.Move.Type.PlaceTown)
+            if (move.type == Move.Type.PlaceTown)
                 move.applyPlaceTownMove(engine.board, engine.playerTurn)
             else move.applyMove(engine.board, engine.playerTurn)
 
@@ -64,7 +64,7 @@ fun App() {
         if (engine.playerTurn == 1 && engine.playerOne.type == Player.Type.AI) {
             val move = engine.playerTwo.getMove(engine)
 
-            if (move.type == _root_ide_package_.core.engine.Move.Type.PlaceTown)
+            if (move.type == Move.Type.PlaceTown)
                 move.applyPlaceTownMove(engine.board, engine.playerTurn)
             else move.applyMove(engine.board, engine.playerTurn)
 
@@ -208,7 +208,7 @@ fun playerSelector(player: Int, onSelectPlayer: (Player) -> Unit) {
 
 }
 
-val engine = _root_ide_package_.core.engine.Engine()
+val engine = Engine()
 
 
 @OptIn(ExperimentalDesktopApi::class)
@@ -217,7 +217,7 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
     val rows = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
     val columns = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 
-    var selectedPosition by remember { mutableStateOf(_root_ide_package_.core.engine.Position(-1, -1)) }
+    var selectedPosition by remember { mutableStateOf(Position(-1, -1)) }
     var isAPieceSelected by remember { mutableStateOf(false) }
 
 
@@ -243,7 +243,7 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
         }
 
         if (possibleMoves.any {
-                ((it.type == _root_ide_package_.core.engine.Move.Type.PlaceTown || it.type == _root_ide_package_.core.engine.Move.Type.Shoot) && it.to == _root_ide_package_.core.engine.Position(
+                ((it.type == Move.Type.PlaceTown || it.type == Move.Type.Shoot) && it.to == Position(
                     i,
                     j
                 ))
@@ -252,7 +252,7 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
 
 
         if (possibleMoves.any {
-                ((it.type == _root_ide_package_.core.engine.Move.Type.Capture || it.type == _root_ide_package_.core.engine.Move.Type.Forward || it.type == _root_ide_package_.core.engine.Move.Type.Slide) && it.from == _root_ide_package_.core.engine.Position(
+                ((it.type == Move.Type.Capture || it.type == Move.Type.Forward || it.type == Move.Type.Slide) && it.from == Position(
                     i,
                     j
                 ))
@@ -268,7 +268,7 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
             LazyRow {
                 itemsIndexed(columns) { index, j ->
                     Cell(
-                        _root_ide_package_.core.engine.Position(
+                        Position(
                             i,
                             j
                         ), board.board[i][j], isSelectable(i, j)) { position ->
@@ -276,7 +276,7 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
                         if (isSelectable(position.row, position.column)) {
 
                             val placeMove = possibleMoves.find {
-                                it.type == _root_ide_package_.core.engine.Move.Type.PlaceTown && it.to == _root_ide_package_.core.engine.Position(
+                                it.type == Move.Type.PlaceTown && it.to == Position(
                                     i,
                                     j
                                 )
@@ -294,7 +294,7 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
                             }
 
                             val shootMove = possibleMoves.find {
-                                it.type == _root_ide_package_.core.engine.Move.Type.Shoot && it.to == _root_ide_package_.core.engine.Position(
+                                it.type == Move.Type.Shoot && it.to == Position(
                                     i,
                                     j
                                 )
@@ -313,21 +313,21 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
 
                             if (selectedPosition.i == -1) {
 
-                                val selectableMoves = possibleMoves.filter { it.from == _root_ide_package_.core.engine.Position(
+                                val selectableMoves = possibleMoves.filter { it.from == Position(
                                     i,
                                     j
                                 )
                                 }.find {
-                                    (it.type == _root_ide_package_.core.engine.Move.Type.Slide || it.type == _root_ide_package_.core.engine.Move.Type.Forward ||
-                                            it.type == _root_ide_package_.core.engine.Move.Type.Retreat || it.type == _root_ide_package_.core.engine.Move.Type.Capture)
+                                    (it.type == Move.Type.Slide || it.type == Move.Type.Forward ||
+                                            it.type == Move.Type.Retreat || it.type == Move.Type.Capture)
                                 }
                                 if (selectableMoves != null) {
-                                    selectedPosition = _root_ide_package_.core.engine.Position(i, j)
+                                    selectedPosition = Position(i, j)
                                 }
                             } else {
 
                                 val move = possibleMoves.filter { it.from == selectedPosition }
-                                    .find { it.to == _root_ide_package_.core.engine.Position(i, j) }
+                                    .find { it.to == Position(i, j) }
                                 if (move != null) {
 
                                     move.applyMove(board, engine.playerTurn)
@@ -336,7 +336,7 @@ fun Grid(board: Board, onUpdate: () -> Unit) {
                                     onUpdate()
 
                                 } else {
-                                    selectedPosition = _root_ide_package_.core.engine.Position(-1, -1)
+                                    selectedPosition = Position(-1, -1)
                                 }
 
                             }

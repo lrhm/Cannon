@@ -1,9 +1,9 @@
 package core.engine
 
-import src.main.kotlin.core.engine.Engine
-import src.main.kotlin.core.engine.Move
-import src.main.kotlin.core.engine.Position
-import src.main.kotlin.core.engine.otherPlayer
+import core.engine.Engine
+import core.engine.Move
+import core.engine.Position
+import core.engine.otherPlayer
 import kotlin.math.roundToInt
 import kotlin.random.Random
 

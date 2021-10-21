@@ -1,9 +1,9 @@
 package core.engine.ai
 
+import core.engine.Engine
+import core.engine.Move
 import core.engine.Node
 import core.engine.util.LruCache
-import src.main.kotlin.core.engine.Engine
-import src.main.kotlin.core.engine.Move
 
 open class Player(val player: Int, val type: Type) {
 

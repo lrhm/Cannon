@@ -1,8 +1,8 @@
 package core.engine.ai
 
 import core.engine.Node
-import src.main.kotlin.core.engine.Engine
-import src.main.kotlin.core.engine.Move
+import core.engine.Engine
+import core.engine.Move
 
 
 class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {

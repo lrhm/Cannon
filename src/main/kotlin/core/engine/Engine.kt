@@ -117,7 +117,7 @@ class Engine {
 
     }
 
-    fun getPossibleMoves(player: Int, board: Board = this.board): List<_root_ide_package_.core.engine.Move> {
+    fun getPossibleMoves(player: Int, board: Board = this.board): List<Move> {
 
 //        val set = mutableSetOf(
 //
@@ -131,7 +131,7 @@ class Engine {
         if (turnsPassed < 2)
             return getTownPlaceMove(board, player)
 
-        val all = mutableListOf<_root_ide_package_.core.engine.Move>()
+        val all = mutableListOf<Move>()
         all.addAll(getShootMoves(board, player))
         all.addAll(getCaptureMoves(board, player))
         all.addAll(getSlideMoves(board, player))
@@ -143,14 +143,14 @@ class Engine {
 
     }
 
-    fun getTownPlaceMove(board: Board, player: Int): MutableList<_root_ide_package_.core.engine.Move> {
-        val moves = mutableListOf<_root_ide_package_.core.engine.Move>()
+    fun getTownPlaceMove(board: Board, player: Int): MutableList<Move> {
+        val moves = mutableListOf<Move>()
 
 
         for (i in 1..8)
             moves.add(
-                _root_ide_package_.core.engine.Move(
-                    _root_ide_package_.core.engine.Move.Type.PlaceTown, _root_ide_package_.core.engine.Position(-1, -1),
+                Move(
+                    Move.Type.PlaceTown, Position(-1, -1),
                     Position
                         (
                         if (player == 0) 9 else 0, i

@@ -1,6 +1,6 @@
 package core.engine
 
-import src.main.kotlin.core.engine.*
+import core.engine.*
 import kotlin.math.sqrt
 
 class Board {
@@ -62,12 +62,12 @@ class Board {
 
     }
 
-    fun getTownPosition(player: Int): _root_ide_package_.core.engine.Position? {
+    fun getTownPosition(player: Int): Position? {
 
         val row = if (player == 0) 9 else 0
         for (i in 1..8) {
             if (board[row][i] == 3 + player)
-                return _root_ide_package_.core.engine.Position(row, i)
+                return Position(row, i)
         }
 
         return null

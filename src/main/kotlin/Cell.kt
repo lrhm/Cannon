@@ -21,7 +21,7 @@ import java.io.InputStream
 
 @Composable
 @Preview
-fun Cell(position: _root_ide_package_.core.engine.Position, value: Int, isSelectable: Boolean, onSelected: (_root_ide_package_.core.engine.Position) -> Unit) {
+fun Cell(position: Position, value: Int, isSelectable: Boolean, onSelected: (Position) -> Unit) {
 
 
     val imageModifier = Modifier

@@ -2,8 +2,8 @@ package core.engine.ai
 
 import core.engine.Node
 import core.engine.util.LruCache
-import src.main.kotlin.core.engine.Engine
-import src.main.kotlin.core.engine.Move
+import core.engine.Engine
+import core.engine.Move
 import java.lang.Integer.max
 import java.lang.Integer.min
 
