@@ -1,12 +1,11 @@
 package core.engine
 
-import core.engine.*
 import java.lang.Integer.max
 import java.lang.Integer.min
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-class Board {
+class GameState {
 
     /**
      * the board of the game
@@ -21,53 +20,9 @@ class Board {
         IntArray(10) { 0 }
     }
 
-    init {
 
-//        var otherBoard = arrayOf(
-//            intArrayOf(0, 0, 0, 2, 0, 0, 0, 4, 0, 0),
-//            intArrayOf(0, 0, 0, 2, 0, 0, 0, 2, 0, 0),
-//            intArrayOf(0, 0, 0, 2, 0, 0, 0, 2, 0, 0),
-//            intArrayOf(0, 2, 0, 2, 0, 0, 2, 2, 0, 2),
-//            intArrayOf(1, 2, 0, 0, 0, 2, 0, 2, 0, 0),
-//            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-//            intArrayOf(1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-//            intArrayOf(0, 0, 1, 0, 1, 0, 1, 0, 1, 0),
-//            intArrayOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
-//            intArrayOf(0, 0, 0, 0, 3, 0, 0, 0, 0, 0)
-//        )
-//
-//        board = otherBoard
+    fun getZobristHash(){
 
-//        for (i in 0..9)
-//            for (j in 0..9)
-//                board[i][j] = otherBoard[i][j]
-
-
-//        0   0   0   0   0   0   0   4   0   0
-//        9  0   0   0   2   0   0   0   2   0   0
-//        8  0   0   0   2   0   0   0   2   0   0
-//        7  0   2   0   2   0   0   2   2   0   2
-//        6  1   2   0   0   0   2   0   2   0   0
-//        5  1   0   0   0   0   0   0   0   0   0
-//        4  1   0   0   0   0   0   0   0   0   0
-//        3  0   0   0   0   1   0   1   0   1   0
-//        2  0   0   0   0   0   0   1   0   0   0
-//        1  0   0   0   0   3   0   0   0   0   0
-    }
-
-    fun lateInit() {
-        board = arrayOf(
-            intArrayOf(0, 0, 0, 0, 0, 0, 0, 4, 0, 0),
-            intArrayOf(0, 0, 0, 2, 0, 0, 0, 2, 0, 0),
-            intArrayOf(0, 0, 0, 2, 0, 0, 0, 2, 0, 0),
-            intArrayOf(0, 0, 0, 2, 0, 0, 2, 2, 0, 2),
-            intArrayOf(0, 0, 0, 0, 0, 2, 0, 0, 0, 0),
-            intArrayOf(0, 2, 2, 0, 0, 0, 0, 0, 0, 0),
-            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
-            intArrayOf(1, 0, 0, 0, 0, 0, 1, 0, 0, 0),
-            intArrayOf(0, 0, 0, 0, 3, 0, 0, 0, 0, 0)
-        )
     }
 
     fun toStr(): String {
@@ -80,24 +35,17 @@ class Board {
         return str
     }
 
-    fun copy(): Board {
+    fun copy(): GameState {
 
 
-        val newBoard = Board()
+        val newBoard = GameState()
         for (i in 0..9)
             for (j in 0..9)
                 newBoard.board[i][j] = this.board[i][j]
 
-//        newBoard.townDeads = arrayOf(null, null)
-//        newBoard.cannonCounts = arrayOf(null, null)
-//        newBoard.pawnCount = arrayOf(null, null)
 
         return newBoard
     }
-
-//    var townDeads = arrayOf<Boolean?>(null, null)
-//    var cannonCounts = arrayOf<Int?>(null, null)
-//    var pawnCount = arrayOf<Int?>(null, null)
 
 
     init {

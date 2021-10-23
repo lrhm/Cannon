@@ -219,7 +219,7 @@ class ParallelAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(pla
         val timeStamp = System.currentTimeMillis()
 
         val parentNode = Node(
-            engine.board, engine, engine.playerTurn, maxDepth, true, Int.MIN_VALUE, Int.MIN_VALUE
+            engine.board, engine, engine.playerTurn, maxDepth, true
         )
 
 

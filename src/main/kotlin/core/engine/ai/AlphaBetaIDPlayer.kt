@@ -32,7 +32,7 @@ class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = Material
         var minMove: Move?
     )
 
-    val transpositionTable = LruCache<Int, GameState>(1000)
+
     val killerTable = LruCache<String, KillerData>(3000)
 
 
@@ -62,9 +62,6 @@ class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = Material
 
         if (isMax) {
             value = Int.MIN_VALUE
-
-
-
 
 
             if (killerMove.maxMove != null) {
@@ -106,12 +103,6 @@ class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = Material
             value = Int.MAX_VALUE
 
 
-            moves = moves.asReversed()
-
-            var idx = 0
-
-
-
             if (killerMove.minMove != null) {
                 if (moves.remove(killerMove.minMove))
                     moves.add(0, killerMove.minMove!!)
@@ -146,7 +137,7 @@ class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = Material
         val timeStamp = System.currentTimeMillis()
 
         val parentNode = Node(
-            engine.board, engine, engine.playerTurn, 20, true, Int.MIN_VALUE, Int.MIN_VALUE
+            engine.board, engine, engine.playerTurn, 20, true
         )
 
 
@@ -181,7 +172,7 @@ class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = Material
 
         thread.stop()
 
-        transpositionTable.evictAll()
+
 
         println("It took ${System.currentTimeMillis() - timeStamp} ${bestMove?.type}")
 //        println("node is $parentNode with value $node children ${parentNode.bestMove}")

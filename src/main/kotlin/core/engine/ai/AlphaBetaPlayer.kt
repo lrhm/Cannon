@@ -11,7 +11,6 @@ import java.lang.Integer.min
 class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
 
-    //    val transpositionTable = LRUCache<String, Node?>(1000)
     var evaluator = MaterialEvaluator()
 
     override fun evaluateState(node: Node): Int {
@@ -21,7 +20,6 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int, isMax: Boolean): Int {
 
 
-//        node.player = node.player.otherPlayer()
         if (depth == 0 || node.isTerminalState()) {
             return evaluateState(node)
         }
@@ -47,7 +45,7 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
                     score
                 )
 
-                if (score  >= mBeta)
+                if (score >= mBeta)
                     break
                 mAlpha = max(mAlpha, value)
 
@@ -57,8 +55,6 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
 
         } else {
             value = Int.MAX_VALUE
-
-            moves = moves.asReversed()
 
             for (move in moves) {
 
@@ -73,7 +69,7 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
                     value,
                     score
                 )
-                if (value <= mAlpha )
+                if (value <= mAlpha)
                     break
 
                 mBeta = min(mAlpha, value)
@@ -92,7 +88,7 @@ class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.
         val timeStamp = System.currentTimeMillis()
 
         val parentNode = Node(
-            engine.board, engine, engine.playerTurn, maxDepth, true, Int.MIN_VALUE, Int.MIN_VALUE
+            engine.board, engine, engine.playerTurn, maxDepth, true
         )
         doAlphaBeta(
             parentNode, maxDepth, Int.MIN_VALUE, Int.MAX_VALUE, true

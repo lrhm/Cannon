@@ -47,8 +47,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
 
             when (entry.flag) {
                 GameState.Flag.Exact -> {
-
-//                    return entry.value
+                    return entry.value
                 }
                 GameState.Flag.LowerBound -> {
 
@@ -64,8 +63,6 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
             }
 
 
-//            if (mAlpha > mBeta)
-//                return entry.value
         }
 
         if (depth == 0 || node.isTerminalState())
@@ -124,11 +121,8 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
         val timeStamp = System.currentTimeMillis()
 
         val parentNode = Node(
-            engine.board, engine, engine.playerTurn, 0, true, Int.MIN_VALUE, Int.MIN_VALUE
+            engine.board, engine, engine.playerTurn, 0, true
         )
-//        val node = doAlphaBeta(
-//            parentNode, maxDepth, Int.MIN_VALUE, Int.MAX_VALUE
-//        )
 
         val startTime = System.currentTimeMillis()
 
@@ -139,7 +133,6 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
 
         val thread = Thread() {
             try {
-
 
                 while (System.currentTimeMillis() - startTime < 2000) {
                     println("ID ${d} starts")
@@ -161,11 +154,10 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
 
         thread.stop()
 
-//        transpositionHash
         transpositionHash.evictAll()
 
 
-        println("It took ${System.currentTimeMillis() - timeStamp} and now map is ${bestMove}")
+//        println("It took ${System.currentTimeMillis() - timeStamp} and now map is ${bestMove}")
 //        println("node is $parentNode with value $node children ${parentNode.bestMove}")
 
         if (bestMove == null)

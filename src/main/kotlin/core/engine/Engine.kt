@@ -1,46 +1,17 @@
 package core.engine
 
-import core.engine.*
 import core.engine.ai.*
 import core.engine.ai.evaluator.MaterialEvaluator
-import kotlinx.coroutines.coroutineScope
-import kotlin.math.roundToInt
 
 class Engine {
-//
-//    companion object{
-//        instance = En
-//    }
-//
-//    3, -2, //moves
-//    2, -2, //cannons
-//    35, -40, //pawns
-//    5, -4, //shoot
-//    5, -4, //capture
-//    3, -3, //possible shots
-//    8, 6, // number pawn in attack vs defend
-//    2 // random
-//    , 6// singe move distance
 
-    var board = Board()
+
+    var board = GameState()
     var playerOne = AlphaBetaIDPlayer(
         0, MaterialEvaluator(
             listOf(
 
-//                3, -2, 4, -4, 35, -40, 0, -4, 0, -4, 0, -3, 8, 6, 2, 0
                 0, 0, 2, -1, 20, -21, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0
-
-//                3, -2, 2, -2, 45, -46, 5, -4, 5, -4, 3, -3, 8, 6, 2, 5
-
-//                4, -3, //moves
-//                8, -7, //cannons
-//                30, -27, //pawns
-//                8, -7, //shoot
-//                5, -4, //capture
-//                0, 0, //possible shots
-//                0, 0, // number pawn in attack vs defend
-//                2 // random
-//                , 0// singe move distance
 
             )
         )
@@ -51,27 +22,6 @@ class Engine {
 
                 0, 0, 2, -1, 20, -21, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0
 
-
-//                3, -2, 4, -4, 35, -40, 0, -4, 0, -4, 0, -3, 8, 6, 2, 0
-
-//                3, -2, 2, -2, 35, -40, 5, -4, 5, -4, 3, -3, 8, 6, 2, 5
-//                9, -14, 12, -9, 48, -47, 15, -9, 16, -13, 10, -7, 19, 13, 9, 13
-//                3, -2, 2, -2, 45, -48, 4, -3, 3, -2, 1, -1, 3, 2, 2, 1
-
-//                3, -2, 4, -3, 45, -46, 4, -3, 3, -2, 1, -1, 3, 2, 2, 1
-
-//                3, -2, 2, -2, 45, -46, 5, -4, 5, -4, 3, -3, 8, 6, 2, 5
-//                4, -3, //moves
-//                5, -5, //cannons
-//                35, -40, //pawns
-//                8, -7, //shoot
-//                5, -4, //capture
-//                6, -6, //possible shots
-//                0, 0, // number pawn in attack vs defend
-//                2 // random
-//                , 1// singe move distance
-
-
             )
         )
     )
@@ -79,15 +29,10 @@ class Engine {
     var turnsPassed = 0
 
 
-    var lastState: Board? = null
-    var secondLastState: Board? = null
-    var thirdLastState: Board? = null
+    var lastState: GameState? = null
+    var secondLastState: GameState? = null
+    var thirdLastState: GameState? = null
 
-    init {
-//        board.lateInit()
-//        playerTurn = 1
-//        turnsPassed = 31
-    }
 
     fun getWinnerAI(): AlphaBetaIDPlayer {
 
@@ -109,18 +54,6 @@ class Engine {
         return playerOne
     }
 
-    fun getPlayerForTurn(): Player {
-        if (playerTurn == 0)
-            return playerOne
-        return playerTwo
-    }
-
-    fun placeTowns() {
-        placeTownForPlayer(3)
-        placeTownForPlayer(4)
-
-        turnsPassed += 2
-    }
 
     fun hasPlayerLost(): Boolean {
 
@@ -128,7 +61,6 @@ class Engine {
             return false
 
 
-//        val player = getPlayerForTurn()
         val row = if (playerTurn == 0) 9 else 0
 
         var isTownDead = true
@@ -148,10 +80,6 @@ class Engine {
 
     }
 
-    fun startGame() {
-
-//        if(playerTurn == 0 && )
-    }
 
     fun playATurn() {
 
@@ -178,59 +106,12 @@ class Engine {
         playerTurn = playerTurn.otherPlayer()
 
 
-//            if (hasPlayerLost())
-//                return@coroutineScope
 
-
-    }
-
-    fun playGame() {
-
-
-        placeTowns()
-
-        while (true) {
-            val player = turnsPassed.mod(2)
-            val moves = getPossibleMoves(player, board)
-
-            val move = moves.random()
-
-//            println("player ${player} moves from ${move.from} to ${move.to} ")
-
-            move.applyMove(board, playerTurn)
-            board.printBoard()
-
-            turnsPassed++
-            readLine()
-        }
-        //apply move
 
 
     }
 
-    fun placeTownForPlayer(townIdx: Int) {
-
-        print("Please enter the position of the town for Player ${townIdx - 2}\n")
-        val townOneInput = readLine()
-
-        val pos = townOneInput?.split(" ")?.map { it.toInt() }
-        if (pos.isNullOrEmpty())
-            print("Invalid, DO again")
-        board.board[pos!![0]][pos[1]] = townIdx
-
-
-    }
-
-    fun getPossibleMoves(player: Int, board: Board = this.board): List<Move> {
-
-//        val set = mutableSetOf(
-//
-//            getSlideMoves(board, player),
-//            getCaptureMoves(board, player),
-//
-//            )
-
-//        println("get possible move for turn ${playerTurn}")
+    fun getPossibleMoves(player: Int, board: GameState = this.board): List<Move> {
 
         if (turnsPassed < 2)
             return getTownPlaceMove(board, player)
@@ -247,7 +128,7 @@ class Engine {
 
     }
 
-    fun getTownPlaceMove(board: Board, player: Int): MutableList<Move> {
+    fun getTownPlaceMove(board: GameState, player: Int): MutableList<Move> {
         val moves = mutableListOf<Move>()
 
 
@@ -267,7 +148,7 @@ class Engine {
         return moves
     }
 
-    fun getShootMoves(board: Board, player: Int): MutableList<Move> {
+    fun getShootMoves(board: GameState, player: Int): MutableList<Move> {
         val moves = mutableListOf<Move>()
         for (i in 0..9)
             for (j in 0..9) {
@@ -316,7 +197,7 @@ class Engine {
         return moves
     }
 
-    fun getSlideMoves(board: Board, player: Int): MutableList<Move> {
+    fun getSlideMoves(board: GameState, player: Int): MutableList<Move> {
 
         val moves = mutableListOf<Move>()
 
@@ -357,7 +238,7 @@ class Engine {
         return moves
     }
 
-    fun getRetreatMoves(board: Board, player: Int): MutableList<Move> {
+    fun getRetreatMoves(board: GameState, player: Int): MutableList<Move> {
         val moves = mutableListOf<Move>()
 
         val soldierValues = player + 1
@@ -398,21 +279,6 @@ class Engine {
                                         }
                                     }
 
-//                                    try {
-//                                        for (ctr in -1..1)
-//                                            if (board.board[i + direction][j + ctr].isEmpty() and board.board[i + 2 * direction][j + ctr * 2].isEmpty()) {
-//
-//                                                moves.add(
-//                                                    Move(
-//                                                        Move.Type.Retreat,
-//                                                        Position(i, j), Position(i + 2 * direction, j + ctr * 2)
-//                                                    )
-//                                                )
-//                                            }
-//
-//                                    } catch (e: Exception) {
-//                                    }
-
 
                                 }
                             } catch (e: Exception) {
@@ -428,7 +294,7 @@ class Engine {
 
     }
 
-    fun getForwardMoves(board: Board, player: Int): MutableList<Move> {
+    fun getForwardMoves(board: GameState, player: Int): MutableList<Move> {
 
         val moves = mutableListOf<Move>()
 
@@ -451,7 +317,7 @@ class Engine {
         return moves
     }
 
-    fun getCaptureMoves(board: Board, player: Int): MutableList<Move> {
+    fun getCaptureMoves(board: GameState, player: Int): MutableList<Move> {
         val moves = mutableListOf<Move>()
 
         val soldierValues = player + 1
@@ -539,7 +405,7 @@ open class Move(val type: Type, var from: Position, var to: Position) {
         return super.equals(other)
     }
 
-    fun applyPlaceTownMove(board: Board, player: Int) {
+    fun applyPlaceTownMove(board: GameState, player: Int) {
 
 //        println("apply town for player $player")
         if (player == 0) {
@@ -550,7 +416,7 @@ open class Move(val type: Type, var from: Position, var to: Position) {
 
     }
 
-    fun applyMove(board: Board, player: Int) {
+    fun applyMove(board: GameState, player: Int) {
 
 
         when (type) {

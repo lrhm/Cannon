@@ -1,6 +1,5 @@
 package core.engine.ai.evaluator
 
-import core.engine.Board
 import core.engine.Move
 import core.engine.Node
 

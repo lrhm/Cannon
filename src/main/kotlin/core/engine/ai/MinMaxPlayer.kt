@@ -3,17 +3,20 @@ package core.engine.ai
 import core.engine.Engine
 import core.engine.Move
 import core.engine.Node
+import core.engine.ai.evaluator.MaterialEvaluator
 
 class MinMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
 
+    val evaluator = MaterialEvaluator()
+
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int): Int {
 
 
-        val children = node.getChildNodes()
+//        val children = node.getChildNodes()
 
         if (depth == 0 || node.isTerminalState())
-            return node.evaluateState()
+            return evaluator.evaluateState(node, player)
 
 
         var score = Int.MIN_VALUE
@@ -23,8 +26,10 @@ class MinMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI)
 
 
 
-        for (child in children) {
-            child.parent = node
+        for (move in node.getMoves()) {
+
+            val child = node.getNodeForMove(move)
+
             value = -1 * doAlphaBeta(child, depth - 1, -beta, -mAlpha)
 
             if (value > score) {
@@ -47,7 +52,7 @@ class MinMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI)
         val timeStamp = System.currentTimeMillis()
 
         val parentNode = Node(
-            engine.board, engine, engine.playerTurn, 0, true, Int.MIN_VALUE, Int.MIN_VALUE
+            engine.board, engine, engine.playerTurn, 0, true
         )
         val node = doAlphaBeta(
             parentNode, maxDepth, Int.MIN_VALUE, Int.MAX_VALUE

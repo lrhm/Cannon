@@ -17,7 +17,7 @@ open class Player(var player: Int, val type: Type) {
     }
 
     open fun evaluateState(node: Node): Int {
-        return node.evaluateState(player)
+        return 0
     }
 
 
@@ -27,8 +27,6 @@ open class Player(var player: Int, val type: Type) {
 
 
 }
-
-
 
 
 fun String.toPlayerType(): Player.Type {

@@ -1,19 +1,13 @@
 package core.engine.util
 
-import core.engine.Board
 import core.engine.Engine
-import core.engine.Move
 import core.engine.ai.AlphaBetaIDPlayer
-import core.engine.ai.Player
 import core.engine.ai.evaluator.MaterialEvaluator
-import core.engine.otherPlayer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.random.Random
-import kotlin.random.nextUInt
 
 class Simulator {
 

@@ -9,22 +9,25 @@ val random = Random(System.currentTimeMillis())
 
 class MaterialEvaluator(
     val weights: List<Int> = arrayListOf(
-        3, -2, //moves
-        2, -2, //cannons
-        35, -40, //pawns
-        5, -4, //shoot
-        5, -4, //capture
-        3, -3, //possible shots
-        8, 6, // number pawn in attack vs defend
-        2 // random
-        , 6// singe move distance
+
+        0, 0, 2, -1, 20, -21, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0
+
+//        3, -2, //moves
+//        2, -2, //cannons
+//        35, -40, //pawns
+//        5, -4, //shoot
+//        5, -4, //capture
+//        3, -3, //possible shots
+//        8, 6, // number pawn in attack vs defend
+//        2 // random
+//        , 6// singe move distance
     )
 ) : Evaluator {
 
 
     fun mutateAndCombine1(other: MaterialEvaluator): MaterialEvaluator {
         val newWeights = weights.mapIndexed { index, i ->
-            (i + other.weights[index] + if (i < 0) random.nextInt(-4..0) else random.nextInt(0..4)) / 2
+            (i + other.weights[index] + random.nextInt(-4..4)) / 2
         }
 
         return MaterialEvaluator(newWeights)
@@ -36,6 +39,8 @@ class MaterialEvaluator(
         val newWeights = weights.mapIndexed { index, i ->
             (i + other.weights[index] + random.nextInt(-4..4)) / 2
         }
+
+
 
         return MaterialEvaluator(newWeights)
 

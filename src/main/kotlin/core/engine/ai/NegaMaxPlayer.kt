@@ -3,17 +3,18 @@ package core.engine.ai
 import core.engine.Node
 import core.engine.Engine
 import core.engine.Move
+import core.engine.ai.evaluator.MaterialEvaluator
 
 
 class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
 
-//    val transpositionTable = LRUCache<String, Node?>(1000)
+    val evaluator = MaterialEvaluator()
 
     fun doNegaMaxBeta(node: Node, depth: Int, alpha: Int, beta: Int): Int {
 
         if (depth == 0 || node.isTerminalState())
-            return node.evaluateState()
+            return evaluator.evaluateState(node, player)
 
         var score = Int.MIN_VALUE
         var value = Int.MIN_VALUE
@@ -43,7 +44,7 @@ class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI
         val timeStamp = System.currentTimeMillis()
 
         val parentNode = Node(
-            engine.board, engine, engine.playerTurn, maxDepth, true, Int.MIN_VALUE, Int.MIN_VALUE
+            engine.board, engine, engine.playerTurn, maxDepth, true
         )
         val node = doNegaMaxBeta(
             parentNode, maxDepth, Int.MIN_VALUE, Int.MAX_VALUE

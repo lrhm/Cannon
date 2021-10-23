@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import core.engine.Board
+import core.engine.GameState
 import core.engine.ai.Player
 import core.engine.ai.toPlayerType
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +27,6 @@ import kotlinx.coroutines.launch
 import core.engine.Engine
 import core.engine.Move
 import core.engine.Position
-import core.engine.otherPlayer
 import core.engine.util.Simulator
 
 @Composable
@@ -90,7 +89,7 @@ fun App() {
     }
 
     fun reset() {
-        engine.board = Board()
+        engine.board = GameState()
         engine.turnsPassed = 0
         engine.playerTurn = 0
         board = engine.board
@@ -228,7 +227,7 @@ val engine = Engine()
 
 @OptIn(ExperimentalDesktopApi::class)
 @Composable
-fun Grid(board: Board, onUpdate: () -> Unit) {
+fun Grid(board: GameState, onUpdate: () -> Unit) {
     val rows = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
     val columns = arrayOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
 

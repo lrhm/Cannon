@@ -56,31 +56,8 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
         var mAlpha = alpha
         var mBeta = beta
 
-//        var entry = transpositionTable[node.hashCode()]
-//        if (entry != null && entry.depth >= depth) {
-//            when (entry.flag) {
-////                GameState.Flag.Exact -> {
-////                    return entry.value
-////                }
-//                GameState.Flag.LowerBound -> {
-//
-//                    mAlpha = max(alpha, entry.value)
-//                }
-//
-//                GameState.Flag.UpperBound -> {
-//
-//                    mBeta = min(beta, entry.value)
-//
-//                }
-//
-//            }
-//
-////            if (mAlpha > mBeta)
-////                return entry.value
-//        }
 
-//        node.player = node.player.otherPlayer()
-        if (depth == 0 || node.isTerminalState()) {
+         if (depth == 0 || node.isTerminalState()) {
             return evaluateState(node)
         }
 
@@ -101,19 +78,6 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
         if (isMax) {
             value = Int.MIN_VALUE
 
-//            val allHistoricalMoves =
-//                history.maxMoves.toSortedMap(Comparator.comparingInt { history.maxMoves[it]!!.value })
-//
-//            var idx = 0
-//
-////            moves.removeAll(allHistoricalMoves.keys)
-////            moves.addAll(allHistoricalMoves.keys)
-//            for (move in allHistoricalMoves.keys) {
-//                if (moves.remove(move)) {
-//                    moves.add(idx, move)
-//                    idx++
-//                }
-//            }
 
             moves.sortedByDescending {
                 history.maxMoves[it]?.value
@@ -123,8 +87,6 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
                 if (moves.remove(killerMove.maxMove))
                     moves.add(0, killerMove.maxMove!!)
             }
-
-
 
 
             for (move in moves) {
@@ -169,8 +131,8 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
 //                history.minMoves.toSortedMap(Comparator.comparingInt { history.maxMoves[it]!!.value })
 
 
-            moves = moves.asReversed()
-            moves.sortBy { history.minMoves[it]?.value }
+//            moves = moves.asReversed()
+            moves.sortedByDescending { history.minMoves[it]?.value }
 
 //            var idx = 0
 //            for (move in allHistoricalMoves.keys.reversed()) {
@@ -233,7 +195,7 @@ class HistoricalAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(p
         val timeStamp = System.currentTimeMillis()
 
         val parentNode = Node(
-            engine.board, engine, engine.playerTurn, maxDepth, true, Int.MIN_VALUE, Int.MIN_VALUE
+            engine.board, engine, engine.playerTurn, maxDepth, true
         )
 
 

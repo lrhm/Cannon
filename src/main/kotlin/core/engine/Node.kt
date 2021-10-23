@@ -1,9 +1,5 @@
 package core.engine
 
-import core.engine.Engine
-import core.engine.Move
-import core.engine.Position
-import core.engine.otherPlayer
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
@@ -11,25 +7,18 @@ val random: Random = Random(System.currentTimeMillis())
 
 
 class Node(
-    val state: Board, val engine: Engine, var player: Int,
+    val state: GameState, val engine: Engine, var player: Int,
     val depth: Int,
     val isMax: Boolean,
-    var alpha: Int,
-    var beta: Int,
-    var move: Move? = null,
-    var score: Int = -500,
-
-    ) {
+    var move: Move? = null
+) {
 
     constructor(
         node: Node,
         move: Move,
-        state: Board, engine: Engine, player: Int, depth: Int,
+        state: GameState, engine: Engine, player: Int, depth: Int,
         isMax: Boolean,
-        alpha: Int,
-        beta: Int,
-        score: Int = -500,
-    ) : this(state, engine, player, depth, isMax, alpha, beta, move, score) {
+    ) : this(state, engine, player, depth, isMax, move) {
         parent = node
 
     }
@@ -102,155 +91,15 @@ class Node(
         return 0.0
     }
 
-
-    fun evaluateState(player: Int): Int {
-
-
-        this.player = player
-
-        myMoves = engine.getPossibleMoves(player, state)
-
-        enemyMoves = engine.getPossibleMoves(player.otherPlayer(), state)
-
-        if (myMoves.isEmpty() || state.isTownDead(player) || state.pawnCount(player) == 0) // total lost
-            return -300
-
-        if (state.isTownDead((player.otherPlayer())) || state.pawnCount(player.otherPlayer()) == 0 || enemyMoves.isEmpty()) // total win
-            return 300
-
-        val shootCnt = myMoves.filter { it.type == Move.Type.Shoot }.size
-        var eShootCnt = enemyMoves.filter { it.type == Move.Type.Shoot }.size
-        if (eShootCnt == 0)
-            eShootCnt = 1
-
-        val captureCnt = myMoves.filter { it.type == Move.Type.Capture }.size
-        var eCaptureCnt = enemyMoves.filter { it.type == Move.Type.Capture }.size
-
-        if (eCaptureCnt == 0)
-            eCaptureCnt = 1
-
-        val myCannons = state.numberOfCannons(player)
-
-        var enemyCannons = state.numberOfCannons(player.otherPlayer())
-
-        if (enemyCannons == 0)
-            enemyCannons = 1
-
-        val possibleShots = state.numberOfPossibleShots(player)
-        var enemyPossibleShots = state.numberOfPossibleShots(player.otherPlayer())
-
-        if (enemyPossibleShots == 0)
-            enemyPossibleShots = 1
-
-        var result =
-            ((myMoves.size.toFloat() / enemyMoves.size) * 2 + 6 * (myCannons.toFloat() / enemyCannons) +
-                    100 * (state.pawnCount(player).toFloat() / state.pawnCount(player.otherPlayer())) +
-                    (6 * (shootCnt.toFloat() / eShootCnt))
-                    + 2 * (captureCnt.toFloat() / eCaptureCnt)
-                    + 4 * (possibleShots / enemyPossibleShots)
-                    + 1 * (random).nextInt(4)
-//                    + 1 * (progressTowardEnemyTown)
-                    )
-
-        return result.roundToInt()
-    }
-
-    fun evaluateState(): Int {
-
-        calcMoves()
-
-
-        if (myMoves.isEmpty() || state.isTownDead(player) || state.pawnCount(player) == 0) // total lost
-            return -300
-
-        if (state.isTownDead((player.otherPlayer())) || state.pawnCount(player.otherPlayer()) == 0 || enemyMoves.isEmpty()) // total win
-            return 300
-
-        val shootCnt = myMoves.filter { it.type == Move.Type.Shoot }.size
-        var eShootCnt = enemyMoves.filter { it.type == Move.Type.Shoot }.size
-        if (eShootCnt == 0)
-            eShootCnt = 1
-
-        val captureCnt = myMoves.filter { it.type == Move.Type.Capture }.size
-        var eCaptureCnt = enemyMoves.filter { it.type == Move.Type.Capture }.size
-
-        if (eCaptureCnt == 0)
-            eCaptureCnt = 1
-
-        val myCannons = state.numberOfCannons(player)
-
-        var enemyCannons = state.numberOfCannons(player.otherPlayer())
-
-        if (enemyCannons == 0)
-            enemyCannons = 1
-
-        val possibleShots = state.numberOfPossibleShots(player)
-        var enemyPossibleShots = state.numberOfPossibleShots(player.otherPlayer())
-
-        if (enemyPossibleShots == 0)
-            enemyPossibleShots = 1
-
-        var result =
-            ((myMoves.size.toFloat() / enemyMoves.size) * 2 + 6 * (myCannons.toFloat() / enemyCannons) +
-                    45 * (state.pawnCount(player).toFloat() / state.pawnCount(player.otherPlayer())) +
-                    (6 * (shootCnt.toFloat() / eShootCnt))
-                    + 2 * (captureCnt.toFloat() / eCaptureCnt)
-                    + 4 * (possibleShots / enemyPossibleShots)
-                    + 1 * (random).nextInt(4)
-//                    + 1 * (progressTowardEnemyTown)
-                    )
-
-
-//        println("Evaluation is $result")
-        return result.roundToInt()
-    }
-
-
     var chNodes: List<Node>? = null
 
     fun getMoves(): MutableList<Move> {
-
         return engine.getPossibleMoves(player, state).toMutableList()
     }
 
-    fun getChildNodes(): MutableList<Node> {
-
-
-        if (chNodes != null)
-            return (chNodes as MutableList<Node>?)!!
-
-        val nodes = mutableListOf<Node>()
-
-        val moves = engine.getPossibleMoves(player, state)
-
-        for (move in moves) {
-
-            val newBoard = state.copy()
-
-            move.applyMove(newBoard, player)
-
-            val node = Node(
-                newBoard, engine, (player + 1).mod(2), depth - 1, isMax.not(), alpha, beta, move
-            )
-            node.parent = this
-            nodes.add(
-                node
-            )
-
-        }
-
-        chNodes = nodes
-
-        return nodes
-
-
-    }
 
     var bestMove: Move? = null
 //     var children: List<Node>
-
-    var isExpanded = false
-    var isPruned = false
 
 
     fun getNodeForMove(move: Move): Node {
@@ -259,7 +108,7 @@ class Node(
         move.applyMove(newBoard, player)
 
         val node = Node(
-            newBoard, engine, (player + 1).mod(2), depth - 1, isMax.not(), alpha, beta, move
+            newBoard, engine, (player + 1).mod(2), depth - 1, isMax.not(), move
         )
         node.parent = this
 
