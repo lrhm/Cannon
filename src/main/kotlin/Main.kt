@@ -43,14 +43,16 @@ fun App() {
         if (engine.hasPlayerLost())
             return
 
-        CoroutineScope(Dispatchers.Default).launch {
+        engine.playATurn()
 
-            engine.playATurn()
-            CoroutineScope(Dispatchers.Main).launch {
-                board = engine.board.copy()
+        engine.board.printBoard()
 
-            }
+
+        CoroutineScope(Dispatchers.Main).launch {
+            board = engine.board.copy()
+
         }
+
 
 //        if (engine.playerTurn == 0 && engine.playerOne.type == Player.Type.AI) {
 //
@@ -132,6 +134,8 @@ fun App() {
                     onUpdate = {
                         board = board.copy()
                         engine.board = board
+
+                        engine.board.printBoard()
 //                        doNextTurn()
 //                        if (engine.turnsPassed == 2)
 //                            startGame()
@@ -219,6 +223,7 @@ fun playerSelector(player: Int, onSelectPlayer: (Player) -> Unit) {
 }
 
 val engine = Engine()
+
 
 
 @OptIn(ExperimentalDesktopApi::class)

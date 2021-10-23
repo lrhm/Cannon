@@ -17,14 +17,14 @@ class MaterialEvaluator(
         3, -3, //possible shots
         8, 6, // number pawn in attack vs defend
         2 // random
-        , 5// singe move distance
+        , 6// singe move distance
     )
 ) : Evaluator {
 
 
     fun mutateAndCombine1(other: MaterialEvaluator): MaterialEvaluator {
         val newWeights = weights.mapIndexed { index, i ->
-            (i + other.weights[index] + if (random.nextBoolean()) 2 else 1 * random.nextInt(-2..2)) / 2
+            (i + other.weights[index] + if (i < 0) random.nextInt(-4..0) else random.nextInt(0..4)) / 2
         }
 
         return MaterialEvaluator(newWeights)
@@ -63,8 +63,8 @@ class MaterialEvaluator(
             return 20000
 
         // losing state
-        if (node.state.toStr() == node.engine.secondLastState?.toStr())
-            return -1000
+        if (node.state.toStr() == node.engine.secondLastState?.toStr() || node.state.toStr() == node.engine.thirdLastState?.toStr())
+            return -30000
 
         val shootCnt = myMoves.filter { it.type == Move.Type.Shoot }.size
         var eShootCnt = enemyMoves.filter { it.type == Move.Type.Shoot }.size

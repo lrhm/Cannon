@@ -10,6 +10,7 @@ plugins {
 group = "me.al"
 version = "1.0"
 
+
 repositories {
     google()
     mavenCentral()
@@ -23,7 +24,10 @@ dependencies {
 tasks.withType<KotlinCompile>() {
     kotlinOptions.jvmTarget = "11"
 }
-
+extensions.findByName("buildScan")?.withGroovyBuilder {
+    setProperty("termsOfServiceUrl", "https://gradle.com/terms-of-service")
+    setProperty("termsOfServiceAgree", "yes")
+}
 compose.desktop {
     application {
         mainClass = "MainKt"

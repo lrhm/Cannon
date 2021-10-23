@@ -2,6 +2,7 @@ package core.engine
 
 import core.engine.*
 import core.engine.ai.*
+import core.engine.ai.evaluator.MaterialEvaluator
 import kotlinx.coroutines.coroutineScope
 import kotlin.math.roundToInt
 
@@ -10,16 +11,83 @@ class Engine {
 //    companion object{
 //        instance = En
 //    }
+//
+//    3, -2, //moves
+//    2, -2, //cannons
+//    35, -40, //pawns
+//    5, -4, //shoot
+//    5, -4, //capture
+//    3, -3, //possible shots
+//    8, 6, // number pawn in attack vs defend
+//    2 // random
+//    , 6// singe move distance
 
     var board = Board()
-    var playerOne = AlphaBetaIDPlayer(0)
-    var playerTwo = AlphaBetaIDPlayer(1)
+    var playerOne = AlphaBetaIDPlayer(
+        0, MaterialEvaluator(
+            listOf(
+
+//                3, -2, 4, -4, 35, -40, 0, -4, 0, -4, 0, -3, 8, 6, 2, 0
+                0, 0, 2, -1, 20, -21, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0
+
+//                3, -2, 2, -2, 45, -46, 5, -4, 5, -4, 3, -3, 8, 6, 2, 5
+
+//                4, -3, //moves
+//                8, -7, //cannons
+//                30, -27, //pawns
+//                8, -7, //shoot
+//                5, -4, //capture
+//                0, 0, //possible shots
+//                0, 0, // number pawn in attack vs defend
+//                2 // random
+//                , 0// singe move distance
+
+            )
+        )
+    )
+    var playerTwo = AlphaBetaIDPlayer(
+        1, MaterialEvaluator(
+            listOf(
+
+                0, 0, 2, -1, 20, -21, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0
+
+
+//                3, -2, 4, -4, 35, -40, 0, -4, 0, -4, 0, -3, 8, 6, 2, 0
+
+//                3, -2, 2, -2, 35, -40, 5, -4, 5, -4, 3, -3, 8, 6, 2, 5
+//                9, -14, 12, -9, 48, -47, 15, -9, 16, -13, 10, -7, 19, 13, 9, 13
+//                3, -2, 2, -2, 45, -48, 4, -3, 3, -2, 1, -1, 3, 2, 2, 1
+
+//                3, -2, 4, -3, 45, -46, 4, -3, 3, -2, 1, -1, 3, 2, 2, 1
+
+//                3, -2, 2, -2, 45, -46, 5, -4, 5, -4, 3, -3, 8, 6, 2, 5
+//                4, -3, //moves
+//                5, -5, //cannons
+//                35, -40, //pawns
+//                8, -7, //shoot
+//                5, -4, //capture
+//                6, -6, //possible shots
+//                0, 0, // number pawn in attack vs defend
+//                2 // random
+//                , 1// singe move distance
+
+
+            )
+        )
+    )
     var playerTurn = 0
     var turnsPassed = 0
 
 
     var lastState: Board? = null
     var secondLastState: Board? = null
+    var thirdLastState: Board? = null
+
+    init {
+//        board.lateInit()
+//        playerTurn = 1
+//        turnsPassed = 31
+    }
 
     fun getWinnerAI(): AlphaBetaIDPlayer {
 
@@ -31,6 +99,15 @@ class Engine {
         return playerOne
     }
 
+    fun getLooserAI(): AlphaBetaIDPlayer {
+
+        if (playerTurn == 0)
+            return playerOne
+        if (playerTurn == 1)
+            return playerTwo
+
+        return playerOne
+    }
 
     fun getPlayerForTurn(): Player {
         if (playerTurn == 0)
@@ -76,32 +153,33 @@ class Engine {
 //        if(playerTurn == 0 && )
     }
 
-    suspend fun playATurn() {
+    fun playATurn() {
 
 
 //        readLine()
-        coroutineScope {
 
-            if (hasPlayerLost())
-                return@coroutineScope
+        if (hasPlayerLost())
+            return
 
-            val move = if (playerTurn == 0)
-                playerOne.getMove(this@Engine)
-            else playerTwo.getMove(this@Engine)
+        val move = if (playerTurn == 0)
+            playerOne.getMove(this@Engine)
+        else playerTwo.getMove(this@Engine)
 
-            secondLastState = lastState?.copy()
-            lastState = board.copy()
+        thirdLastState = secondLastState?.copy()
+        secondLastState = lastState?.copy()
+        lastState = board.copy()
 
-            move.applyMove(board, playerTurn)
-            turnsPassed++
-            playerTurn = playerTurn.otherPlayer()
+        move.applyMove(board, playerTurn)
+
+        move.from.printChessNotation()
+        move.to.printChessNotation()
+
+        turnsPassed++
+        playerTurn = playerTurn.otherPlayer()
 
 
 //            if (hasPlayerLost())
 //                return@coroutineScope
-
-
-        }
 
 
     }
@@ -198,10 +276,10 @@ class Engine {
 
                     for (k in -1..1)
                         for (l in -1..1) {
-                            if (l == -1 && k == 0)
-                                continue
-                            if (l == 1 && k == 0)
-                                continue
+//                            if (l == -1 && k == 0)
+//                                continue
+//                            if (l == 1 && k == 0)
+//                                continue
                             try {
                                 if (board.board[i + k][j + l].isFriendlySoldier(player) and
                                     board.board[i + 2 * k][j + 2 * l].isFriendlySoldier(player)
@@ -250,10 +328,10 @@ class Engine {
 //                    println("soldier at $i $j")
                     for (k in -1..1)
                         for (l in -1..1) {
-                            if (l == -1 && k == 0)
-                                continue
-                            if (l == 1 && k == 0)
-                                continue
+//                            if (l == -1 && k == 0)
+//                                continue
+//                            if (l == 1 && k == 0)
+//                                continue
                             try {
 //                                println("$k $l ${i+k} ${j+l}")
                                 if (board.board[i + k][j + l].isFriendlySoldier(player) and
@@ -298,20 +376,42 @@ class Engine {
                             try {
                                 if (board.board[i + k][l + j].isEnemySoldier(player)) {
                                     // now check if we can retreat
-                                    try {
-                                        for (ctr in -1..1)
-                                            if (board.board[i + direction][j + ctr].isEmpty() and board.board[i + 2 * direction][j + ctr * 2].isEmpty()) {
 
+                                    for (z in -1..1) {
+
+                                        try {
+
+                                            if (board.board[i + direction][j + z].isEmpty()
+                                                &&
+                                                board.board[i + 2 * direction][j + 2 * z].isEmpty()
+                                            ) {
                                                 moves.add(
                                                     Move(
                                                         Move.Type.Retreat,
-                                                        Position(i, j), Position(i + 2 * direction, j + ctr * 2)
+                                                        Position(i, j),
+                                                        Position(i + 2 * direction, j + 2 * z)
                                                     )
                                                 )
                                             }
+                                        } catch (e: Exception) {
 
-                                    } catch (e: Exception) {
+                                        }
                                     }
+
+//                                    try {
+//                                        for (ctr in -1..1)
+//                                            if (board.board[i + direction][j + ctr].isEmpty() and board.board[i + 2 * direction][j + ctr * 2].isEmpty()) {
+//
+//                                                moves.add(
+//                                                    Move(
+//                                                        Move.Type.Retreat,
+//                                                        Position(i, j), Position(i + 2 * direction, j + ctr * 2)
+//                                                    )
+//                                                )
+//                                            }
+//
+//                                    } catch (e: Exception) {
+//                                    }
 
 
                                 }
@@ -478,5 +578,17 @@ data class Position(val row: Int, val column: Int) {
         if (other is Position)
             return other.row == row && other.column == column
         return super.equals(other)
+    }
+
+    val iList = arrayOf("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K")
+
+    fun printChessNotation() {
+
+        if (i == -1)
+            return
+        println(
+            "${iList[j]}-${10 - i}"
+        )
+
     }
 }

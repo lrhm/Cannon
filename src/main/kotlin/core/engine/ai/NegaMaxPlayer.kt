@@ -10,25 +10,18 @@ class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI
 
 //    val transpositionTable = LRUCache<String, Node?>(1000)
 
-    fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int): Int {
-
+    fun doNegaMaxBeta(node: Node, depth: Int, alpha: Int, beta: Int): Int {
 
         if (depth == 0 || node.isTerminalState())
             return node.evaluateState()
-
-//        val children = node.getChildNodes()
 
         var score = Int.MIN_VALUE
         var value = Int.MIN_VALUE
         var mAlpha = alpha
 
-
         for (move in node.getMoves()) {
-
-
             val child = node.getNodeForMove(move)
-
-            value = -1 * doAlphaBeta(child, depth - 1, -beta, -mAlpha)
+            value = -1 * doNegaMaxBeta(child, depth - 1, -beta, -mAlpha)
 
             if (value > score) {
                 score = value
@@ -37,7 +30,7 @@ class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI
 
             if (value > alpha)
                 mAlpha = score
-            if (score + 5 >= beta)
+            if (score >= beta)
                 break
         }
         return score
@@ -52,7 +45,7 @@ class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI
         val parentNode = Node(
             engine.board, engine, engine.playerTurn, maxDepth, true, Int.MIN_VALUE, Int.MIN_VALUE
         )
-        val node = doAlphaBeta(
+        val node = doNegaMaxBeta(
             parentNode, maxDepth, Int.MIN_VALUE, Int.MAX_VALUE
         )
 

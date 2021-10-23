@@ -17,8 +17,57 @@ class Board {
      * 3 means a town for player 0
      * 4 means a town for player 1
      */
-    val board = Array(10) {
+    var board = Array(10) {
         IntArray(10) { 0 }
+    }
+
+    init {
+
+//        var otherBoard = arrayOf(
+//            intArrayOf(0, 0, 0, 2, 0, 0, 0, 4, 0, 0),
+//            intArrayOf(0, 0, 0, 2, 0, 0, 0, 2, 0, 0),
+//            intArrayOf(0, 0, 0, 2, 0, 0, 0, 2, 0, 0),
+//            intArrayOf(0, 2, 0, 2, 0, 0, 2, 2, 0, 2),
+//            intArrayOf(1, 2, 0, 0, 0, 2, 0, 2, 0, 0),
+//            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+//            intArrayOf(1, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+//            intArrayOf(0, 0, 1, 0, 1, 0, 1, 0, 1, 0),
+//            intArrayOf(0, 0, 0, 0, 0, 0, 1, 0, 0, 0),
+//            intArrayOf(0, 0, 0, 0, 3, 0, 0, 0, 0, 0)
+//        )
+//
+//        board = otherBoard
+
+//        for (i in 0..9)
+//            for (j in 0..9)
+//                board[i][j] = otherBoard[i][j]
+
+
+//        0   0   0   0   0   0   0   4   0   0
+//        9  0   0   0   2   0   0   0   2   0   0
+//        8  0   0   0   2   0   0   0   2   0   0
+//        7  0   2   0   2   0   0   2   2   0   2
+//        6  1   2   0   0   0   2   0   2   0   0
+//        5  1   0   0   0   0   0   0   0   0   0
+//        4  1   0   0   0   0   0   0   0   0   0
+//        3  0   0   0   0   1   0   1   0   1   0
+//        2  0   0   0   0   0   0   1   0   0   0
+//        1  0   0   0   0   3   0   0   0   0   0
+    }
+
+    fun lateInit() {
+        board = arrayOf(
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 4, 0, 0),
+            intArrayOf(0, 0, 0, 2, 0, 0, 0, 2, 0, 0),
+            intArrayOf(0, 0, 0, 2, 0, 0, 0, 2, 0, 0),
+            intArrayOf(0, 0, 0, 2, 0, 0, 2, 2, 0, 2),
+            intArrayOf(0, 0, 0, 0, 0, 2, 0, 0, 0, 0),
+            intArrayOf(0, 2, 2, 0, 0, 0, 0, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 0, 0, 0, 0, 1, 0),
+            intArrayOf(1, 0, 0, 0, 0, 0, 1, 0, 0, 0),
+            intArrayOf(0, 0, 0, 0, 3, 0, 0, 0, 0, 0)
+        )
     }
 
     fun toStr(): String {
@@ -84,6 +133,9 @@ class Board {
     }
 
     fun calcMoveDistanceTowardEnemy(player: Int, move: Move): Double {
+
+        if (move.type != Move.Type.Capture && move.type != Move.Type.Slide && move.type != Move.Type.Capture)
+            return 0.0
         val enemyTownPostion = getTownPosition(player.otherPlayer())!!
         val i = move.to.i
         val j = move.to.j
@@ -227,10 +279,10 @@ class Board {
 
                     for (k in -1..1)
                         for (l in -1..1) {
-                            if (l == -1 && k == 0)
-                                continue
-                            if (l == 1 && k == 0)
-                                continue
+//                            if (l == -1 && k == 0)
+//                                continue
+//                            if (l == 1 && k == 0)
+//                                continue
                             try {
                                 if (board[i + k][j + l].isFriendlySoldier(player) and
                                     board[i + 2 * k][j + 2 * l].isFriendlySoldier(player)
@@ -425,13 +477,14 @@ class Board {
 
     fun printBoard() {
 
-        print("     A    B   C   D   E   F   G   H   I   J\n")
+//        print("  A    B   C   D   E   F   G   H   I   J\n")
 
 
         for (i in 0..9) {
-            print("${i}  ")
+//            print("${10 - i}  ")
             for (j in 0..9) {
-                print("${board[i][j]}   ")
+                val end = if (j != 9) "," else ""
+                print("${board[i][j]}  ${end} ")
             }
             println("")
 

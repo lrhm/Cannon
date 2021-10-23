@@ -157,7 +157,7 @@ class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = Material
 
 
                 while (System.currentTimeMillis() - timeStamp < 2000) {
-                    depth++
+                    depth += 1
 //                    println("Iteration $depth starts")
 
                     doAlphaBeta(
@@ -177,7 +177,7 @@ class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = Material
         })
         thread.start()
 
-        sleep(1500)
+        sleep(1000)
 
         thread.stop()
 
