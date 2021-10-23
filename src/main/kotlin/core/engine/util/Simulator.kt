@@ -2,6 +2,7 @@ package core.engine.util
 
 import core.engine.Engine
 import core.engine.ai.AlphaBetaIDPlayer
+import core.engine.ai.Player
 import core.engine.ai.evaluator.MaterialEvaluator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -12,98 +13,7 @@ import kotlin.random.Random
 class Simulator {
 
 
-//    val winnerWeights = mutableListOf<MaterialEvaluator>()
-//
-//    fun doNextTurn() {
-//
-//        if (engine.hasPlayerLost()) {
-//
-////            if (engine.playerTurn == 0) {
-////                winnerWeights.add(engine.playerTwo.evaluator)
-////            } else
-////                winnerWeights.add(engine.playerOne.evaluator)
-//            reset()
-//            return
-//
-//        }
-//
-//
-//        if (engine.playerTurn == 0 && engine.playerOne.type == Player.Type.AI) {
-//
-//            val move = engine.playerOne.getMove(engine)
-//            move.applyMove(engine.board, engine.playerTurn)
-//            println("moving ${move.type} ${move.from} ${move.to}")
-//            engine.turnsPassed++
-//            engine.playerTurn = engine.playerTurn.otherPlayer()
-////            board = engine.board.copy()
-//            return
-//
-//        }
-//
-//        if (engine.playerTurn == 1 && engine.playerOne.type == Player.Type.AI) {
-//
-//            val move = engine.playerTwo.getMove(engine)
-//            move.applyMove(engine.board, engine.playerTurn)
-//
-//
-//            engine.turnsPassed++
-//            engine.playerTurn = engine.playerTurn.otherPlayer()
-//
-////            board = engine.board.copy()
-//            return
-//
-//        }
-//
-//
-//    }
-//
-//    fun reset() {
-//
-//        println("game ended")
-//        engine.board = Board()
-//        engine.turnsPassed = 0
-//        engine.playerTurn = 0
-////        board = engine.board
-////        isGameStarted = false
-//
-//        if (winnerWeights.size == 4) {
-//
-//
-//            val newEvaluator = winnerWeights[0].mutateAndCombine(winnerWeights[3])
-//
-//            val otherEval = winnerWeights[1].mutateAndCombine(winnerWeights[2])
-//            engine.playerOne.evaluator = newEvaluator
-////            engine.playerTwo.evaluator = otherEval
-//            winnerWeights.removeAll { true }
-//
-//            println("new weights are found, start again ")
-//            println("${newEvaluator.weights}")
-//            println("${otherEval.weights}")
-//
-//
-//        }
-//        startGame()
-//    }
-//
-//    fun startGame() {
-//
-//
-//        CoroutineScope(Dispatchers.Main).launch {
-//
-////            if (isGameStarted.not())
-////                return@launch
-//            doNextTurn()
-////            delay(100)
-//            startGame()
-//
-//
-//        }
-//
-//
-//    }
-
-
-    fun simulateGame(first: AlphaBetaIDPlayer, second: AlphaBetaIDPlayer) {
+    fun simulateGame(first: Player, second: Player) {
 
         println("simulate a game")
         CoroutineScope(Dispatchers.Default).launch {
@@ -228,8 +138,8 @@ class Simulator {
         }
     }
 
-    var pool = mutableListOf<AlphaBetaIDPlayer>()
-    val winStatistics = HashMap<AlphaBetaIDPlayer, Int>()
+    var pool = mutableListOf<Player>()
+    val winStatistics = HashMap<Player, Int>()
 
     fun generateAIPool() {
 

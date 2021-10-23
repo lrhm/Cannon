@@ -9,7 +9,7 @@ import core.engine.ai.evaluator.MaterialEvaluator
 class NegaMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
 
-    val evaluator = MaterialEvaluator()
+//    val evaluator = MaterialEvaluator()
 
     fun doNegaMaxBeta(node: Node, depth: Int, alpha: Int, beta: Int): Int {
 

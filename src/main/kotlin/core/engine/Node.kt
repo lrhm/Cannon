@@ -116,5 +116,7 @@ class Node(
 
     }
 
+    fun stringHashHey() = state.toStr() + "$player"
+
 
 }

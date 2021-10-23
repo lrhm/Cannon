@@ -11,8 +11,8 @@ import java.lang.Integer.min
 import java.lang.Thread.sleep
 
 
-class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.AI) {
-    var evaluator = MaterialEvaluator()
+class NegaMaxIDPlayer(player: Int, override var evaluator: MaterialEvaluator = MaterialEvaluator()) : Player(player, Type.AI) {
+
 
     override fun evaluateState(node: Node): Int {
         return evaluator.evaluateState(node, player)
@@ -28,7 +28,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
         enum class Flag { Exact, LowerBound, UpperBound }
     }
 
-    val transpositionHash = LruCache<Int, GameState>(1000000)
+    val transpositionHash = LruCache<String, GameState>(1000000)
 
     val killerTable = LruCache<Int, Move>(100000)
 
@@ -42,7 +42,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
         var mBeta = beta
 
 
-        var entry = transpositionHash[node.hashCode()]
+        var entry = transpositionHash[node.stringHashHey()]
         if (entry != null && entry.depth >= depth) {
 
             when (entry.flag) {
@@ -109,7 +109,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
 
         entry = GameState(score, flag, depth, node.bestMove)
 
-        transpositionHash.put(node.hashCode(), entry)
+        transpositionHash.put(node.stringHashHey(), entry)
 
         return score
 
@@ -144,7 +144,7 @@ class NegaMaxIDPlayer(player: Int, val maxDepth: Int = 6) : Player(player, Type.
                     d++
 
                 }
-            } catch (e: Exception){
+            } catch (e: Exception) {
 
             }
         }

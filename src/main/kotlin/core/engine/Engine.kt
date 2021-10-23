@@ -7,7 +7,7 @@ class Engine {
 
 
     var board = GameState()
-    var playerOne = AlphaBetaIDPlayer(
+    var playerOne: Player = NegaMaxIDPlayer(
         0, MaterialEvaluator(
             listOf(
 
@@ -16,7 +16,7 @@ class Engine {
             )
         )
     )
-    var playerTwo = AlphaBetaIDPlayer(
+    var playerTwo: Player = AlphaBetaIDPlayer(
         1, MaterialEvaluator(
             listOf(
 
@@ -34,7 +34,7 @@ class Engine {
     var thirdLastState: GameState? = null
 
 
-    fun getWinnerAI(): AlphaBetaIDPlayer {
+    fun getWinnerAI(): Player {
 
         if (playerTurn == 0)
             return playerTwo
@@ -44,7 +44,7 @@ class Engine {
         return playerOne
     }
 
-    fun getLooserAI(): AlphaBetaIDPlayer {
+    fun getLooserAI(): Player {
 
         if (playerTurn == 0)
             return playerOne
@@ -104,9 +104,6 @@ class Engine {
 
         turnsPassed++
         playerTurn = playerTurn.otherPlayer()
-
-
-
 
 
     }

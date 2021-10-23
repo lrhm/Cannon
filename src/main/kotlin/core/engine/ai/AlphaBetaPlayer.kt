@@ -11,7 +11,7 @@ import java.lang.Integer.min
 class AlphaBetaPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
 
-    var evaluator = MaterialEvaluator()
+//    var evaluator = MaterialEvaluator()
 
     override fun evaluateState(node: Node): Int {
         return evaluator.evaluateState(node, player)

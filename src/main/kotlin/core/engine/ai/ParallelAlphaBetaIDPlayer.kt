@@ -38,7 +38,7 @@ class ParallelAlphaBetaIDPlayer(player: Int, val maxDepth: Int = 8) : Player(pla
 
     val killerTable = LruCache<String, KillerData>(3000)
 
-    var evaluator = MaterialEvaluator()
+//    var evaluator = MaterialEvaluator()
 
     override fun evaluateState(node: Node): Int {
 

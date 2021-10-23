@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-class AlphaBetaIDPlayer(player: Int, var evaluator: MaterialEvaluator = MaterialEvaluator()) :
+class AlphaBetaIDPlayer(player: Int, override var evaluator: MaterialEvaluator = MaterialEvaluator()) :
     Player(player, Type.AI) {
 
     data class GameState(

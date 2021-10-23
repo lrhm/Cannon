@@ -8,7 +8,7 @@ import core.engine.ai.evaluator.MaterialEvaluator
 class MinMaxPlayer(player: Int, val maxDepth: Int = 8) : Player(player, Type.AI) {
 
 
-    val evaluator = MaterialEvaluator()
+//    val evaluator = MaterialEvaluator()
 
     fun doAlphaBeta(node: Node, depth: Int, alpha: Int, beta: Int): Int {
 
