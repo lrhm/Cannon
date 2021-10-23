@@ -3,7 +3,6 @@ package core.engine
 import kotlin.math.roundToInt
 import kotlin.random.Random
 
-val random: Random = Random(System.currentTimeMillis())
 
 
 class Node(

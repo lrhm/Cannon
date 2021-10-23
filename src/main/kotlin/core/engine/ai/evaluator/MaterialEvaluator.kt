@@ -65,7 +65,7 @@ class MaterialEvaluator(
         if (state.isTownDead((player.otherPlayer()))) // total win
             return 30000
         if (state.pawnCount(player.otherPlayer()) == 0 || enemyMoves.isEmpty())
-            return 20000
+            return 30000
 
         // losing state
         if (node.state.toStr() == node.engine.secondLastState?.toStr() || node.state.toStr() == node.engine.thirdLastState?.toStr())

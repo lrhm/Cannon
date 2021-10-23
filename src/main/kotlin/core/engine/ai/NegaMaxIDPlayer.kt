@@ -46,9 +46,9 @@ class NegaMaxIDPlayer(player: Int, override var evaluator: MaterialEvaluator = M
         if (entry != null && entry.depth >= depth) {
 
             when (entry.flag) {
-                GameState.Flag.Exact -> {
-                    return entry.value
-                }
+//                GameState.Flag.Exact -> {
+//                    return entry.value
+//                }
                 GameState.Flag.LowerBound -> {
 
                     mAlpha = max(alpha, entry.value)
@@ -154,8 +154,14 @@ class NegaMaxIDPlayer(player: Int, override var evaluator: MaterialEvaluator = M
 
         thread.stop()
 
-        transpositionHash.evictAll()
 
+        try {
+
+            transpositionHash.evictAll()
+
+        }catch (e: Exception){
+
+        }
 
 //        println("It took ${System.currentTimeMillis() - timeStamp} and now map is ${bestMove}")
 //        println("node is $parentNode with value $node children ${parentNode.bestMove}")

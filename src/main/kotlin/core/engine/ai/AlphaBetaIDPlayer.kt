@@ -2,7 +2,6 @@ package core.engine.ai
 
 import core.engine.Node
 import core.engine.Engine
-import core.engine.LRUCache
 import core.engine.Move
 import core.engine.ai.evaluator.MaterialEvaluator
 import core.engine.util.LruCache
@@ -10,8 +9,6 @@ import kotlinx.coroutines.*
 import java.lang.Integer.max
 import java.lang.Integer.min
 import java.lang.Thread.sleep
-import java.util.*
-import kotlin.collections.HashMap
 
 
 class AlphaBetaIDPlayer(player: Int, override var evaluator: MaterialEvaluator = MaterialEvaluator()) :
