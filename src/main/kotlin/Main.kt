@@ -52,40 +52,6 @@ fun App() {
 
         }
 
-
-//        if (engine.playerTurn == 0 && engine.playerOne.type == Player.Type.AI) {
-//
-//            val move = engine.playerOne.getMove(engine)
-//            move.applyMove(engine.board, engine.playerTurn)
-////            println("moving ${move.type} ${move.from} ${move.to}")
-//            engine.turnsPassed++
-//            engine.playerTurn = engine.playerTurn.otherPlayer()
-//            CoroutineScope(Dispatchers.Main).launch {
-//                board = engine.board.copy()
-//
-//            }
-//            return
-//
-//        }
-//
-//        if (engine.playerTurn == 1 && engine.playerOne.type == Player.Type.AI) {
-//            val move = engine.playerTwo.getMove(engine)
-//
-//            move.applyMove(engine.board, engine.playerTurn)
-//
-//
-//            engine.turnsPassed++
-//            engine.playerTurn = engine.playerTurn.otherPlayer()
-//
-//            CoroutineScope(Dispatchers.Main).launch {
-//                board = engine.board.copy()
-//
-//            }
-//            return
-//
-//        }
-
-
     }
 
     fun reset() {
@@ -117,7 +83,7 @@ fun App() {
     }
 
     val imageModifier = Modifier
-        .width(500.dp)
+        .width(515.dp)
         .fillMaxWidth()
 
     DesktopMaterialTheme {
@@ -145,19 +111,19 @@ fun App() {
             }
 
             Row {
-                Text("Player 0 : ", modifier = Modifier.padding(20.dp))
-
-                playerSelector(0) {
-
-//                    engine.playerOne = it
-                }
-
-                Text("Player 1 : ", modifier = Modifier.padding(20.dp))
-
-                playerSelector(1) {
-
-//                    engine.playerTwo = it
-                }
+//                Text("Player 0 : ", modifier = Modifier.padding(20.dp))
+//
+//                playerSelector(0) {
+//
+////                    engine.playerOne = it
+//                }
+//
+//                Text("Player 1 : ", modifier = Modifier.padding(20.dp))
+//
+//                playerSelector(1) {
+//
+////                    engine.playerTwo = it
+//                }
 
             }
 
@@ -236,14 +202,7 @@ fun Grid(board: GameState, onUpdate: () -> Unit) {
 
 
     val possibleMoves = engine.getPossibleMoves(engine.playerTurn, engine.board)
-//    println("engine ${engine.playerTurn} ${engine.turnsPassed}")
 
-//    board.printBoard()
-
-    fun simulateGame() {
-
-
-    }
 
     fun isSelectable(i: Int, j: Int): Boolean {
 
@@ -362,44 +321,8 @@ fun Grid(board: GameState, onUpdate: () -> Unit) {
                         }
 
                     }
-//                    Text(
-//                        modifier = Modifier
-//                            .padding(10.dp)
-//                            .background(
-//                                if (possibleMoves.any { it.type == Move.Type.PlaceTown && it.to == Position(i, j) }
-//                                ) Color.Cyan else Color.Red
-//                            )
-//                            .width(50.dp)
-//                            .height(50.dp)
-//                            .mouseClickable {
-////                                println("clicked, moves are ${possibleMoves[0].type}")
-//                                if (
-//                                    possibleMoves.any {
-//                                        it.type == Move.Type.PlaceTown && it.to == Position(i, j)
-//                                    }
-//                                ) {
 //
-//                                    println("Move it ")
-//                                    possibleMoves.find {
-//                                        it.type == Move.Type.PlaceTown && it.to == Position(
-//                                            i,
-//                                            j
-//                                        )
-//                                    }
-//                                        ?.applyPlaceTownMove(board, engine.playerTurn)
-//
-//                                    board.printBoard()
-//                                    engine.turnsPassed++
-//                                    engine.playerTurn = engine.turnsPassed.mod(2)
-//                                    onUpdate()
-//                                }
-//                            },
-////                        ,
-//
-//                        textAlign = TextAlign.Center,
-//                        color = Color.White,
-//                        text = "${board.board[i][j]}"
-//                    )
+
                 }
             }
 
@@ -411,7 +334,7 @@ fun Grid(board: GameState, onUpdate: () -> Unit) {
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication) {
-        this.window.setSize(1000.dp.value.toInt(), 1000.dp.value.toInt())
+        this.window.setSize(520.dp.value.toInt(), 700.dp.value.toInt())
         App()
     }
 }

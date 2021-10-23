@@ -7,11 +7,11 @@ class Engine {
 
 
     var board = GameState()
-    var playerOne: Player = NegaMaxIDPlayer(
+    var playerOne: Player = AlphaBetaIDPlayer(
         0, MaterialEvaluator(
             listOf(
 
-                0, 0, 2, -1, 20, -21, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0
+                0, 0, 2, -1, 20, -20, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0
 
             )
         )
